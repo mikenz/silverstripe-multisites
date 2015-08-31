@@ -2,7 +2,7 @@
 
 class SubsiteTest extends BaseSubsiteTest {
 
-	static $fixture_file = 'silverstripe-simplesubsites/tests/SubsiteTest.yml';
+	static $fixture_file = 'simplesubsites/tests/SubsiteTest.yml';
 
 	function setUp() {
 		parent::setUp();

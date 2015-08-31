@@ -1,7 +1,7 @@
 <?php
 
 class SubsiteAdminFunctionalTest extends FunctionalTest {
-	static $fixture_file = 'silverstripe-simplesubsites/tests/SubsiteTest.yml';
+	static $fixture_file = 'simplesubsites/tests/SubsiteTest.yml';
 	static $use_draft_site = true;
 
 	protected $autoFollowRedirection = false;

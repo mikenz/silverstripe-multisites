@@ -1,29 +1,29 @@
 <?php
 
 class SubsiteAdminTest extends BaseSubsiteTest {
-	static $fixture_file = 'silverstripe-simplesubsites/tests/SubsiteTest.yml';
+	static $fixture_file = 'simplesubsites/tests/SubsiteTest.yml';
 
-	function adminLoggedInSession() {
-		return new Session(array(
-			'loggedInAs' => $this->idFromFixture('Member', 'admin')
-		));
-	}
+    function adminLoggedInSession() {
+        return new Session(array(
+            'loggedInAs' => $this->idFromFixture('Member', 'admin')
+        ));
+    }
 
-	/**
-	 * Test generation of the view
-	 */
-	function testBasicView() {
+    /**
+     * Test generation of the view
+     */
+    function testBasicView() {
 		Subsite::$write_hostmap = false;
 		$subsite1ID = $this->objFromFixture('Subsite','domaintest1')->ID;
 
-		// Open the admin area logged in as admin
-		$response1 = Director::test('admin/subsites/', null, $this->adminLoggedInSession());
+        // Open the admin area logged in as admin
+        $response1 = Director::test('admin/subsites/', null, $this->adminLoggedInSession());
 
-		// Confirm that this URL gets you the entire page, with the edit form loaded
+        // Confirm that this URL gets you the entire page, with the edit form loaded
 		$response2 = Director::test("admin/subsites/Subsite/EditForm/field/Subsite/item/$subsite1ID/edit", null, $this->adminLoggedInSession());
 		$this->assertTrue(strpos($response2->getBody(), 'id="Form_ItemEditForm_ID"') !== false, "Testing Form_ItemEditForm_ID exists");
-		$this->assertTrue(strpos($response2->getBody(), '<head') !== false, "Testing <head> exists");
-	}
+        $this->assertTrue(strpos($response2->getBody(), '<head') !== false, "Testing <head> exists");
+    }
 
 
 	/**
