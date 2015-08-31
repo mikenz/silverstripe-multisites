@@ -1,6 +1,17 @@
-# Subsites Module
+# Multisites Module
 
-[![Build Status](https://secure.travis-ci.org/silverstripe/silverstripe-subsites.png?branch=master)](http://travis-ci.org/silverstripe/silverstripe-subsites)
+This is a fork of the [Silverstripe Subsites](https://github.com/silverstripe/silverstripe-subsites) module.
+
+## Differences from Subsites module
+
+ * Remove the concept of a "main" site - all subsites are created equal
+ * Silverstripe 4.0 compatible
+ * Remove subsites option in "Files" that gave the illusion that file would only be available on one domain
+ * Main menu items are available no mater what subsite is selected
+
+This should be a drop in replacement for the silverstripe subsites module except You will lose access to all pages from
+the "main site" unless you do some database hacking.
+
 
 ## Introduction
 
@@ -44,9 +55,9 @@ For user documentation please see:
  	* However, you can remove page types from a subsite when creating the subsite - [see the setup documentation for further details](set_up.md)
  * The only code a developer can edit between subsites is the theme
  * The separation between subsites in the CMS needs to be seen as cosmetic, and mostly applicable to the "Pages" and "Files" sections of the CMS.
- * All subsites run in the same process space and data set. Therefore if an outage affects one subsite it will affect all subsites, and if bad code or hardware corrupts one subsite's data, it's very likely that it has corrupted all subsite data. 
+ * All subsites run in the same process space and data set. Therefore if an outage affects one subsite it will affect all subsites, and if bad code or hardware corrupts one subsite's data, it's very likely that it has corrupted all subsite data.
  	* This principle applies to application error, security vulnerabilities and high levels of traffic
- * It is not currently possible to backup or restore the data from a single subsite. 
+ * It is not currently possible to backup or restore the data from a single subsite.
  * It is awkward (but not impossible) to have separate teams of developers working on different subsites - primarily because of the level of collaboration needed. It is more suited to the same group of developers being responsible for all of the subsites.
 
 If more isolation of code, security, or performance is needed, then consider running multiple separate installations (e.g. on separate servers).
@@ -136,7 +147,7 @@ To limit your admin gridfields to the current Subsite records, you can do someth
 	:::php
 	public function getEditForm($id = null, $fields = null){
 		$form = parent::getEditForm($id, $fields);
-		
+
 		$gridField = $form->Fields()->fieldByName($this->sanitiseClassName($this->modelClass));
 		if(class_exists('Subsite')){
 			$list = $gridField->getList()->filter(array('SubsiteID'=>Subsite::currentSubsiteID()));
