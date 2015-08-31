@@ -6,7 +6,7 @@
 			</a>
 			<span><% if $SiteConfig %>$SiteConfig.Title<% else %>$ApplicationName<% end_if %></span>
 		</div>
-	
+
 		<div class="cms-login-status">
 			<a href="Security/logout" class="logout-link" title="<% _t('LeftAndMain_Menu.LOGOUT','Log out') %>"><% _t('LeftAndMain_Menu.LOGOUT','Log out') %></a>
 			<% with $CurrentMember %>
@@ -22,7 +22,7 @@
 			<% include SubsiteList %>
 		<% end_if %>
 	</div>
-		
+
 	<div class="cms-panel-content center">
 		<ul class="cms-menu-list">
 		<% loop $MainMenu %>
@@ -35,7 +35,7 @@
 		<% end_loop %>
 		</ul>
 	</div>
-		
+
 	<div class="cms-panel-toggle south">
 		<a class="toggle-expand" href="#"><span>&raquo;</span></a>
 		<a class="toggle-collapse" href="#"><span>&laquo;</span></a>

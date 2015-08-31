@@ -40,9 +40,9 @@ class SubsiteDomain extends DataObject {
 	public function onAfterWrite() {
 		Subsite::writeHostMap();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return \FieldList
 	 */
 	public function getCMSFields() {
@@ -56,7 +56,7 @@ class SubsiteDomain extends DataObject {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param bool $includerelations
 	 * @return array
 	 */

@@ -21,7 +21,7 @@ class LeftAndMainSubsites extends Extension {
 		$subsite = Subsite::currentSubSite();
 		return $subsite ? Convert::raw2xml($subsite->Title) : _t('LeftAndMain.SITECONTENTLEFT');
 	}
-	
+
 	function updatePageOptions(&$fields) {
 		$fields->push(new HiddenField('SubsiteID', 'SubsiteID', Subsite::currentSubsiteID()));
 	}
@@ -83,7 +83,7 @@ class LeftAndMainSubsites extends Extension {
 	}
 
 	/*
-	 * Generates a list of subsites with the data needed to 
+	 * Generates a list of subsites with the data needed to
 	 * produce a dropdown site switcher
 	 * @return ArrayList
 	 */
@@ -102,7 +102,7 @@ class LeftAndMainSubsites extends Extension {
 
 		foreach($list as $subsite) {
 			$CurrentState = $subsite->ID == $currentSubsiteID ? 'selected' : '';
-	
+
 			$output->push(new ArrayData(array(
 				'CurrentState' => $CurrentState,
 				'ID' => $subsite->ID,
@@ -251,7 +251,7 @@ class LeftAndMainSubsites extends Extension {
 	}
 
 	function augmentNewSiteTreeItem(&$item) {
-		$item->SubsiteID = isset($_POST['SubsiteID']) ? $_POST['SubsiteID'] : Subsite::currentSubsiteID();	
+		$item->SubsiteID = isset($_POST['SubsiteID']) ? $_POST['SubsiteID'] : Subsite::currentSubsiteID();
 	}
 
 	function onAfterSave($record) {

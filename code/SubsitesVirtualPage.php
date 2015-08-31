@@ -9,10 +9,10 @@ class SubsitesVirtualPage extends VirtualPage {
 		'CustomMetaDescription' => 'Text',
 		'CustomExtraMeta' => 'HTMLText'
 	);
-	
+
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
-		
+
 		$subsites = DataObject::get('Subsite');
 		if(!$subsites) {
 			$subsites = new ArrayList();
@@ -31,7 +31,7 @@ class SubsitesVirtualPage extends VirtualPage {
 			$subsiteSelectionField,
 			'CopyContentFromID'
 		);
-		
+
 		// Setup the linking to the original page.
 		$pageSelectionField = new SubsitesTreeDropdownField(
 			"CopyContentFromID",
@@ -40,13 +40,13 @@ class SubsitesVirtualPage extends VirtualPage {
 			"ID",
 			"MenuTitle"
 		);
-		
+
 		if(Controller::has_curr() && Controller::curr()->getRequest()) {
 			$subsiteID = Controller::curr()->getRequest()->postVar('CopyContentFromID_SubsiteID');
 			$pageSelectionField->setSubsiteID($subsiteID);
 		}
 		$fields->replaceField('CopyContentFromID', $pageSelectionField);
-		
+
 		// Create links back to the original object in the CMS
 		if($this->CopyContentFromID) {
 			$editLink = "admin/pages/edit/show/$this->CopyContentFromID/?SubsiteID=" . $this->CopyContentFrom()->SubsiteID;
@@ -56,47 +56,47 @@ class SubsitesVirtualPage extends VirtualPage {
 				"</a>";
 			$fields->removeByName("VirtualPageContentLinkLabel");
 			$fields->addFieldToTab(
-				"Root.Main", 
+				"Root.Main",
 				$linkToContentLabelField = new LabelField('VirtualPageContentLinkLabel', $linkToContent),
 				'Title'
 			);
 			$linkToContentLabelField->setAllowHTML(true);
 		}
-		
-		
+
+
 		$fields->addFieldToTab(
-			'Root.Main', 
+			'Root.Main',
 			TextField::create(
-				'CustomMetaTitle', 
+				'CustomMetaTitle',
 				$this->fieldLabel('CustomMetaTitle')
-			)->setDescription(_t('SubsitesVirtualPage.OverrideNote', 'Overrides inherited value from the source')), 
+			)->setDescription(_t('SubsitesVirtualPage.OverrideNote', 'Overrides inherited value from the source')),
 			'MetaTitle'
 		);
 		$fields->addFieldToTab(
-			'Root.Main', 
+			'Root.Main',
 			TextareaField::create(
-				'CustomMetaKeywords', 
+				'CustomMetaKeywords',
 				$this->fieldLabel('CustomMetaTitle')
-			)->setDescription(_t('SubsitesVirtualPage.OverrideNote')), 
+			)->setDescription(_t('SubsitesVirtualPage.OverrideNote')),
 			'MetaKeywords'
 		);
 		$fields->addFieldToTab(
-			'Root.Main', 
+			'Root.Main',
 			TextareaField::create(
-				'CustomMetaDescription', 
+				'CustomMetaDescription',
 				$this->fieldLabel('CustomMetaTitle')
-			)->setDescription(_t('SubsitesVirtualPage.OverrideNote')), 
+			)->setDescription(_t('SubsitesVirtualPage.OverrideNote')),
 			'MetaDescription'
 		);
 		$fields->addFieldToTab(
-			'Root.Main', 
+			'Root.Main',
 			TextField::create(
-				'CustomExtraMeta', 
+				'CustomExtraMeta',
 				$this->fieldLabel('CustomMetaTitle')
-			)->setDescription(_t('SubsitesVirtualPage.OverrideNote')), 
+			)->setDescription(_t('SubsitesVirtualPage.OverrideNote')),
 			'ExtraMeta'
 		);
-		
+
 		return $fields;
 	}
 
@@ -109,18 +109,18 @@ class SubsitesVirtualPage extends VirtualPage {
 
 		return $labels;
 	}
-	
+
 	public function getVirtualFields() {
 		$fields = parent::getVirtualFields();
 		foreach($fields as $k => $v) {
 			if($v == 'SubsiteID') unset($fields[$k]);
 		}
-		
+
 		foreach(self::$db as $field => $type) if (in_array($field, $fields)) unset($fields[array_search($field, $fields)]);
 
 		return $fields;
 	}
-	
+
 	public function syncLinkTracking() {
 		$oldState = Subsite::$disable_subsite_filter;
 		Subsite::$disable_subsite_filter = true;
@@ -130,28 +130,28 @@ class SubsitesVirtualPage extends VirtualPage {
 
 	public function onBeforeWrite() {
 		parent::onBeforeWrite();
-	
+
 		if($this->CustomMetaTitle) $this->MetaTitle = $this->CustomMetaTitle;
 		else {
-			$this->MetaTitle = $this->ContentSource()->MetaTitle ? $this->ContentSource()->MetaTitle : $this->MetaTitle; 
+			$this->MetaTitle = $this->ContentSource()->MetaTitle ? $this->ContentSource()->MetaTitle : $this->MetaTitle;
 		}
 		if($this->CustomMetaKeywords) $this->MetaKeywords = $this->CustomMetaKeywords;
 		else {
-			$this->MetaKeywords = $this->ContentSource()->MetaKeywords ? $this->ContentSource()->MetaKeywords : $this->MetaKeywords; 
+			$this->MetaKeywords = $this->ContentSource()->MetaKeywords ? $this->ContentSource()->MetaKeywords : $this->MetaKeywords;
 		}
 		if($this->CustomMetaDescription) $this->MetaDescription = $this->CustomMetaDescription;
 		else {
-			$this->MetaDescription = $this->ContentSource()->MetaDescription ? $this->ContentSource()->MetaDescription : $this->MetaDescription; 
+			$this->MetaDescription = $this->ContentSource()->MetaDescription ? $this->ContentSource()->MetaDescription : $this->MetaDescription;
 		}
 		if($this->CustomExtraMeta) $this->ExtraMeta = $this->CustomExtraMeta;
 		else {
-			$this->ExtraMeta = $this->ContentSource()->ExtraMeta ? $this->ContentSource()->ExtraMeta : $this->ExtraMeta; 
+			$this->ExtraMeta = $this->ContentSource()->ExtraMeta ? $this->ContentSource()->ExtraMeta : $this->ExtraMeta;
 		}
 	}
-	
+
 	public function validURLSegment() {
 		$isValid = parent::validURLSegment();
-		
+
 		// Veto the validation rules if its false. In this case, some logic
 		// needs to be duplicated from parent to find out the exact reason the validation failed.
 		if(!$isValid) {
@@ -165,17 +165,17 @@ class SubsitesVirtualPage extends VirtualPage {
 					$parentFilter = ' AND "SiteTree"."ParentID" = 0';
 				}
 			}
-			
+
 			$origDisableSubsiteFilter = Subsite::$disable_subsite_filter;
 			Subsite::$disable_subsite_filter = true;
 			$existingPage = DataObject::get_one(
-				'SiteTree', 
+				'SiteTree',
 				"\"URLSegment\" = '$this->URLSegment' $IDFilter $parentFilter",
 				false // disable cache, it doesn't include subsite status in the key
 			);
 			Subsite::$disable_subsite_filter = $origDisableSubsiteFilter;
 			$existingPageInSubsite = DataObject::get_one(
-				'SiteTree', 
+				'SiteTree',
 				"\"URLSegment\" = '$this->URLSegment' $IDFilter $parentFilter",
 				false // disable cache, it doesn't include subsite status in the key
 			);
@@ -184,25 +184,25 @@ class SubsitesVirtualPage extends VirtualPage {
 			// be more specific and allow same URLSegments in different subsites
 			$isValid = !($existingPage && $existingPageInSubsite);
 		}
-		
+
 		return $isValid;
 	}
 }
 
 class SubsitesVirtualPage_Controller extends VirtualPage_Controller {
-	
+
 	public function reloadContent() {
 		$this->failover->copyFrom($this->failover->CopyContentFrom());
 		$this->failover->write();
 		return;
 	}
-	
+
 	public function init(){
 		$origDisableSubsiteFilter = Subsite::$disable_subsite_filter;
 		Subsite::$disable_subsite_filter = true;
-		
+
 		parent::init();
-		
+
 		Subsite::$disable_subsite_filter = $origDisableSubsiteFilter;
 	}
 }

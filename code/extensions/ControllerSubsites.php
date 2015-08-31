@@ -9,7 +9,7 @@ class ControllerSubsites extends Extension {
 			SSViewer::set_theme($theme);
 		}
 	}
-	
+
 	function CurrentSubsite(){
 		if($subsite = Subsite::currentSubsite()){
 			return $subsite;

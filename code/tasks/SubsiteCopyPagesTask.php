@@ -9,7 +9,7 @@
 class SubsiteCopyPagesTask extends BuildTask {
 
 	protected $title = 'Copy pages to different subsite';
-	
+
 	protected $description = '';
 
 	function run($request) {
@@ -47,7 +47,7 @@ class SubsiteCopyPagesTask extends BuildTask {
 					} else {
 						$childClone = $child->duplicateToSubsite($subsiteTo->ID, true);
 					}
-					
+
 					$childClone->ParentID = $destParentID;
 					$childClone->writeToStage('Stage');
 					$childClone->publish('Stage', 'Live');

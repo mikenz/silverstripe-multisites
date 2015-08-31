@@ -23,7 +23,7 @@ class SiteTreeSubsites extends DataExtension {
 	public function augmentSQL(SQLSelect $query, DataQuery $dataQuery = null) {
 		if(Subsite::$disable_subsite_filter) return;
 		if($dataQuery->getQueryParam('Subsite.filter') === false) return;
-		
+
 		// If you're querying by ID, ignore the sub-site - this is a bit ugly...
 		// if(!$query->where || (strpos($query->where[0], ".\"ID\" = ") === false && strpos($query->where[0], ".`ID` = ") === false && strpos($query->where[0], ".ID = ") === false && strpos($query->where[0], "ID = ") !== 0)) {
 		if($query->filtersOnID()) return;
@@ -42,7 +42,7 @@ class SiteTreeSubsites extends DataExtension {
 			break;
 		}
 	}
-	
+
 	function onBeforeWrite() {
 		if(!$this->owner->ID && !$this->owner->SubsiteID) $this->owner->SubsiteID = Subsite::currentSubsiteID(true);
 
@@ -88,12 +88,12 @@ class SiteTreeSubsites extends DataExtension {
 				$baseUrl,
 				($nested_urls_enabled && $this->owner->ParentID ? $this->owner->Parent()->RelativeLink(true) : null)
 			);
-			
+
 			$urlsegment = $fields->dataFieldByName('URLSegment');
 			$urlsegment->setURLPrefix($baseLink);
 		}
 	}
-	
+
 	function alternateSiteConfig() {
 		if(!$this->owner->SubsiteID) return false;
 		$sc = DataObject::get_one('SiteConfig', '"SubsiteID" = ' . $this->owner->SubsiteID);
@@ -106,7 +106,7 @@ class SiteTreeSubsites extends DataExtension {
 		}
 		return $sc;
 	}
-	
+
 	/**
 	 * Only allow editing of a page if the member satisfies one of the following conditions:
 	 * - Is in a group which has access to the subsite this page belongs to
@@ -117,7 +117,7 @@ class SiteTreeSubsites extends DataExtension {
 	function canEdit($member = null) {
 
 		if(!$member) $member = Member::currentUser();
-		
+
 		// Find the sites that this user has access to
 		$goodSites = Subsite::accessible_sites('CMS_ACCESS_CMSMain',$member)->column('ID');
 
@@ -135,25 +135,25 @@ class SiteTreeSubsites extends DataExtension {
 		// Return true if they have access to this object's site
 		if(!(in_array(0, $goodSites) || in_array($subsiteID, $goodSites))) return false;
 	}
-	
+
 	/**
 	 * @return boolean
 	 */
 	function canDelete($member = null) {
 		if(!$member && $member !== FALSE) $member = Member::currentUser();
-		
+
 		return $this->canEdit($member);
 	}
-	
+
 	/**
 	 * @return boolean
 	 */
 	function canAddChildren($member = null) {
 		if(!$member && $member !== FALSE) $member = Member::currentUser();
-		
+
 		return $this->canEdit($member);
 	}
-	
+
 	/**
 	 * @return boolean
 	 */
@@ -172,7 +172,7 @@ class SiteTreeSubsites extends DataExtension {
 			$subsite = $subsiteID;
 			$subsiteID = $subsite->ID;
 		} else $subsite = DataObject::get_by_id('Subsite', $subsiteID);
-		
+
 		$oldSubsite=Subsite::currentSubsiteID();
 		if($subsiteID) {
 			Subsite::changeSubsite($subsiteID);
@@ -240,7 +240,7 @@ class SiteTreeSubsites extends DataExtension {
 		// Set LinkTracking appropriately
 		$links = HTTP::getLinksIn($this->owner->Content);
 		$linkedPages = array();
-		
+
 		if($links) foreach($links as $link) {
 			if(substr($link, 0, strlen('http://')) == 'http://') {
 				$withoutHttp = substr($link, strlen('http://'));
@@ -253,7 +253,7 @@ class SiteTreeSubsites extends DataExtension {
 					Subsite::disable_subsite_filter(true);
 					$candidatePage = DataObject::get_one("SiteTree", "\"URLSegment\" = '" . Convert::raw2sql(urldecode( $rest)) . "' AND \"SubsiteID\" = " . $subsiteID, false);
 					Subsite::disable_subsite_filter($origDisableSubsiteFilter);
-					
+
 					if($candidatePage) {
 						$linkedPages[] = $candidatePage->ID;
 					} else {
@@ -262,17 +262,17 @@ class SiteTreeSubsites extends DataExtension {
 				}
 			}
 		}
-		
+
 		$this->owner->CrossSubsiteLinkTracking()->setByIDList($linkedPages);
 	}
-	
+
 	/**
 	 * Return a piece of text to keep DataObject cache keys appropriately specific
 	 */
 	function cacheKeyComponent() {
 		return 'subsite-'.Subsite::currentSubsiteID(true);
 	}
-	
+
 	/**
 	 * @param Member
 	 * @return boolean|null

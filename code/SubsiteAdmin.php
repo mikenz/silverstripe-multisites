@@ -1,15 +1,15 @@
 <?php
 /**
  * Admin interface to manage and create {@link Subsite} instances.
- * 
+ *
  * @package subsites
  */
 class SubsiteAdmin extends ModelAdmin {
-	
+
 	private static $managed_models = array('Subsite');
 
 	private static $url_segment = 'subsites';
-	
+
 	private static $menu_title = "Subsites";
 
 	private static $menu_icon = "multisites/images/subsites.png";
