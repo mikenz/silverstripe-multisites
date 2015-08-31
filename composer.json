@@ -10,11 +10,12 @@
 	],
 	"authors": [
 		{
-			"name": "Sam Minnee",
-			"email": "sam@silverstripe.com"
-		},{
 			"name": "Mike Cochrane",
 			"email": "mikec@mikenz.geek.nz"
+		},
+		{
+			"name": "Sam Minnee",
+			"email": "sam@silverstripe.com"
 		}
 	],
 	"require":

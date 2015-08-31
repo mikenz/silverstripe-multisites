@@ -2,7 +2,7 @@
 
 class LeftAndMainSubsitesTest extends FunctionalTest {
 
-	static $fixture_file = 'simplesubsites/tests/SubsiteTest.yml';
+	static $fixture_file = 'silverstripe-simplesubsites/tests/SubsiteTest.yml';
 
 	/**
 	 * Avoid subsites filtering on fixture fetching.

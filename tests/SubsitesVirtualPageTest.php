@@ -2,8 +2,8 @@
 
 class SubsitesVirtualPageTest extends BaseSubsiteTest {
 	static $fixture_file = array(
-		'simplesubsites/tests/SubsiteTest.yml',
-		'simplesubsites/tests/SubsitesVirtualPageTest.yml',
+		'silverstripe-simplesubsites/tests/SubsiteTest.yml',
+		'silverstripe-simplesubsites/tests/SubsitesVirtualPageTest.yml',
 	);
 
 	function setUp() {
