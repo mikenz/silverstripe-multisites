@@ -12,14 +12,12 @@ LeftAndMain::add_extension('LeftAndMainSubsites');
 LeftAndMain::add_extension('ControllerSubsites');
 
 Group::add_extension('GroupSubsites');
-File::add_extension('FileSubsites');
 ErrorPage::add_extension('ErrorPageSubsite');
 SiteConfig::add_extension('SiteConfigSubsites');
 
 SS_Report::add_excluded_reports('SubsiteReportWrapper');
 
 //Display in cms menu
-AssetAdmin::add_extension('SubsiteMenuExtension');
 SecurityAdmin::add_extension('SubsiteMenuExtension');
 CMSMain::add_extension('SubsiteMenuExtension');
 CMSPagesController::add_extension('SubsiteMenuExtension');
