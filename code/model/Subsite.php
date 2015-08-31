@@ -687,6 +687,10 @@ class Subsite extends DataObject {
 			$domains = DataObject::get("SubsiteDomain", "\"SubsiteID\" = $this->ID", "\"IsPrimary\" DESC","", 1);
 			if($domains && $domains->Count()>0) {
 				$domain = $domains->First()->Domain;
+				if (self::$strict_subdomain_matching) {
+					return $domain;
+				}
+
 				// If there are wildcards in the primary domain (not recommended), make some
 				// educated guesses about what to replace them with:
 				$domain = preg_replace('/\.\*$/',".$_SERVER[HTTP_HOST]", $domain);

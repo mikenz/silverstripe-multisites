@@ -225,7 +225,15 @@ class SubsiteTest extends BaseSubsiteTest {
 
 		$this->assertEquals('two.mysite.com', 
 			$this->objFromFixture('Subsite','domaintest2')->domain());
-			
+
+		Subsite::$strict_subdomain_matching = true;
+		$this->assertEquals('four.www.mysite.com',
+			$this->objFromFixture('Subsite','domaintest4')->domain());
+
+		Subsite::$strict_subdomain_matching = false;
+		$this->assertEquals('four.mysite.com',
+			$this->objFromFixture('Subsite','domaintest4')->domain());
+
 		$originalHTTPHost = $_SERVER['HTTP_HOST'];
 		
 		$_SERVER['HTTP_HOST'] = "www.example.org";

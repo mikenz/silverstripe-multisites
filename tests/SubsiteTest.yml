@@ -11,6 +11,9 @@ Subsite:
       Title: Test 2
    domaintest3:
       Title: Test 3
+   domaintest4:
+      Title: Test 4
+      Language: en_NZ
 SubsiteDomain:
    subsite1:
       SubsiteID: =>Subsite.subsite1
@@ -35,6 +38,10 @@ SubsiteDomain:
    dt3:
       SubsiteID: =>Subsite.domaintest3
       Domain: three.*
+      IsPrimary: 1
+   dt4:
+      SubsiteID: =>Subsite.domaintest4
+      Domain: four.www.mysite.com
       IsPrimary: 1
 Page:
    mainSubsitePage:
