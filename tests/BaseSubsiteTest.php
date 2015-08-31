@@ -1,6 +1,8 @@
 <?php
 class BaseSubsiteTest extends SapphireTest {
 
+	static $fixture_file = 'multisites/tests/BaseSubsiteTest.yml';
+
 	function setUp() {
 		parent::setUp();
 
@@ -13,7 +15,7 @@ class BaseSubsiteTest extends SapphireTest {
 	function objFromFixture($class, $id) {
 		Subsite::disable_subsite_filter(true);
 		$obj = parent::objFromFixture($class, $id);
-		Subsite::disable_subsite_filter(false);		
+		Subsite::disable_subsite_filter(false);
 
 		return $obj;
 	}

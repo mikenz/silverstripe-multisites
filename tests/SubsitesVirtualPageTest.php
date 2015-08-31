@@ -5,11 +5,11 @@ class SubsitesVirtualPageTest extends BaseSubsiteTest {
 		'multisites/tests/SubsiteTest.yml',
 		'multisites/tests/SubsitesVirtualPageTest.yml',
 	);
-	
+
 	function setUp() {
 		parent::setUp();
 		$this->logInWithPermission('ADMIN');
-		
+
 		$fh = fopen(Director::baseFolder() . '/assets/testscript-test-file.pdf', "w");
 		fwrite($fh, str_repeat('x',1000000));
 		fclose($fh);
@@ -26,25 +26,25 @@ class SubsitesVirtualPageTest extends BaseSubsiteTest {
 			if(file_exists(Director::baseFolder().$file)) unlink(Director::baseFolder().$file);
 		}
 	}
-	
+
 	// Attempt to bring main:linky to subsite2:linky
 	function testVirtualPageFromAnotherSubsite() {
 		Subsite::$write_hostmap = false;
-		
+
 		$subsite = $this->objFromFixture('Subsite', 'subsite2');
-		
+
 		Subsite::changeSubsite($subsite->ID);
 		Subsite::$disable_subsite_filter = false;
-		
+
 		$linky = $this->objFromFixture('Page', 'linky');
-		
+
 		$svp = new SubsitesVirtualPage();
 		$svp->CopyContentFromID = $linky->ID;
 		$svp->SubsiteID = $subsite->ID;
 		$svp->URLSegment = 'linky';
-		
+
 		$svp->write();
-		
+
 		$this->assertEquals($svp->SubsiteID, $subsite->ID);
 		$this->assertEquals($svp->Title, $linky->Title);
 	}
@@ -63,12 +63,12 @@ class SubsitesVirtualPageTest extends BaseSubsiteTest {
 		$svp->CopyContentFromID = $page->ID;
 		$svp->write();
 		$svp->doPublish();
-		
+
 		// Rename the file
 		$file = $this->objFromFixture('File', 'file1');
 		$file->Name = 'renamed-test-file.pdf';
 		$file->write();
-		
+
 		// Verify that the draft and publish virtual pages both have the corrected link
 		$this->assertContains('<img src="assets/renamed-test-file.pdf"',
 			DB::query("SELECT \"Content\" FROM \"SiteTree\" WHERE \"ID\" = $svp->ID")->value());
@@ -101,27 +101,27 @@ class SubsitesVirtualPageTest extends BaseSubsiteTest {
 		$p->doPublish();
 		$this->fixVersionNumberCache($vp);
 		$this->assertTrue($vp->IsAddedToStage);
-		
+
 		// A new VP created after P's initial construction
 		$vp2 = new SubsitesVirtualPage();
 		$vp2->CopyContentFromID = $p->ID;
 		$vp2->write();
 		$this->assertTrue($vp2->IsAddedToStage);
-		
+
 		// Also remains orange after a republish
 		$p->Content = "new content";
 		$p->write();
 		$p->doPublish();
 		$this->fixVersionNumberCache($vp2);
 		$this->assertTrue($vp2->IsAddedToStage);
-		
+
 		// VP is now published
 		$vp->doPublish();
 
 		$this->fixVersionNumberCache($vp);
 		$this->assertTrue($vp->ExistsOnLive);
 		$this->assertFalse($vp->IsModifiedOnStage);
-		
+
 		// P edited, VP and P both go green
 		$p->Content = "third content";
 		$p->write();
@@ -136,7 +136,7 @@ class SubsitesVirtualPageTest extends BaseSubsiteTest {
 		$this->assertTrue($vp->ExistsOnLive);
 		$this->assertFalse($vp->IsModifiedOnStage);
 	}
-	
+
 	/**
 	 * This test ensures published Subsites Virtual Pages immediately reflect updates
 	 * to their published target pages. Note - this has to happen when the virtual page
@@ -152,12 +152,12 @@ class SubsitesVirtualPageTest extends BaseSubsiteTest {
 		$p->writeToStage('Stage');
 		$p->publish('Stage', 'Live');
 		$this->assertTrue($p->ExistsOnLive);
-		
+
 		// change to subsite
 		$subsite = $this->objFromFixture('Subsite', 'subsite2');
 		Subsite::changeSubsite($subsite->ID);
 		Subsite::$disable_subsite_filter = false;
-		
+
 		// create svp in subsite
 		$svp = new SubsitesVirtualPage();
 		$svp->CopyContentFromID = $p->ID;
@@ -166,33 +166,30 @@ class SubsitesVirtualPageTest extends BaseSubsiteTest {
 		$svp->publish('Stage', 'Live');
 		$this->assertEquals($svp->SubsiteID, $subsite->ID);
 		$this->assertTrue($svp->ExistsOnLive);
-		
-		// change back to original subsite ("Main site")
-		Subsite::changeSubsite(0);
-		
+
 		// update original page
 		$p->Title = 'New Title';
 		// "save & publish"
 		$p->writeToStage('Stage');
 		$p->publish('Stage', 'Live');
 		$this->assertNotEquals($p->SubsiteID, $subsite->ID);
-		
+
 		// reload SVP from database
 		// can't use DO::get by id because caches.
 		$svpdb = $svp->get()->byID($svp->ID);
-		
+
 		// ensure title changed
-		$this->assertEquals($svpdb->Title, $p->Title); 
+		$this->assertEquals($svpdb->Title, $p->Title);
 	}
-	
+
 	function testUnpublishingParentPageUnpublishesSubsiteVirtualPages() {
 		Config::inst()->update('StaticPublisher', 'disable_realtime', true);
-		
+
 		// Go to main site, get parent page
 		$subsite = $this->objFromFixture('Subsite', 'main');
 		Subsite::changeSubsite($subsite->ID);
 		$page = $this->objFromFixture('Page', 'importantpage');
-		
+
 		// Create two SVPs on other subsites
 		$subsite = $this->objFromFixture('Subsite', 'subsite1');
 		Subsite::changeSubsite($subsite->ID);
@@ -200,30 +197,30 @@ class SubsitesVirtualPageTest extends BaseSubsiteTest {
 		$vp1->CopyContentFromID = $page->ID;
 		$vp1->write();
 		$vp1->doPublish();
-		
+
 		$subsite = $this->objFromFixture('Subsite', 'subsite2');
 		Subsite::changeSubsite($subsite->ID);
 		$vp2 = new SubsitesVirtualPage();
 		$vp2->CopyContentFromID = $page->ID;
 		$vp2->write();
 		$vp2->doPublish();
-		
+
 		// Switch back to main site, unpublish source
 		$subsite = $this->objFromFixture('Subsite', 'main');
 		Subsite::changeSubsite($subsite->ID);
 		$page = $this->objFromFixture('Page', 'importantpage');
 		$page->doUnpublish();
-		
+
 		Subsite::changeSubsite($vp1->SubsiteID);
 		$onLive = Versioned::get_one_by_stage('SubsitesVirtualPage', 'Live', "\"SiteTree_Live\".\"ID\" = ".$vp1->ID);
 		$this->assertNull($onLive, 'SVP has been removed from live');
-		
+
 		$subsite = $this->objFromFixture('Subsite', 'subsite2');
 		Subsite::changeSubsite($vp2->SubsiteID);
 		$onLive = Versioned::get_one_by_stage('SubsitesVirtualPage', 'Live', "\"SiteTree_Live\".\"ID\" = ".$vp2->ID);
 		$this->assertNull($onLive, 'SVP has been removed from live');
 	}
-	
+
 	/**
 	 * Similar to {@link SiteTreeSubsitesTest->testTwoPagesWithSameURLOnDifferentSubsites()}
 	 * and {@link SiteTreeSubsitesTest->testPagesInDifferentSubsitesCanShareURLSegment()}.
@@ -233,33 +230,33 @@ class SubsitesVirtualPageTest extends BaseSubsiteTest {
 		$subsite1 = $this->objFromFixture('Subsite', 'subsite1');
 		$subsite2 = $this->objFromFixture('Subsite', 'subsite2');
 		Subsite::changeSubsite($subsite1->ID);
-		
+
 		$subsite1Page = $this->objFromFixture('Page', 'subsite1_staff');
 		$subsite1Page->URLSegment = 'staff';
 		$subsite1Page->write();
-		
+
 		// saving on subsite1, and linking to subsite1
 		$subsite1Vp = new SubsitesVirtualPage();
 		$subsite1Vp->CopyContentFromID = $subsite1Page->ID;
 		$subsite1Vp->SubsiteID = $subsite1->ID;
 		$subsite1Vp->write();
 		$this->assertNotEquals(
-			$subsite1Vp->URLSegment, 
+			$subsite1Vp->URLSegment,
 			$subsite1Page->URLSegment,
 			"Doesn't allow explicit URLSegment overrides when already existing in same subsite"
 		);
-		
+
 		//Change to subsite 2
 		Subsite::changeSubsite($subsite2->ID);
 
-		// saving in subsite2 (which already has a page with URLSegment 'contact-us'), 
+		// saving in subsite2 (which already has a page with URLSegment 'contact-us'),
 		// but linking to a page in subsite1
 		$subsite2Vp = new SubsitesVirtualPage();
 		$subsite2Vp->CopyContentFromID = $subsite1Page->ID;
-		$subsite2Vp->SubsiteID = $subsite2->ID; 
+		$subsite2Vp->SubsiteID = $subsite2->ID;
 		$subsite2Vp->write();
 		$this->assertEquals(
-			$subsite2Vp->URLSegment, 
+			$subsite2Vp->URLSegment,
 			$subsite1Page->URLSegment,
 			"Does allow explicit URLSegment overrides when only existing in a different subsite"
 		);

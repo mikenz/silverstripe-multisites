@@ -8,13 +8,6 @@ class LeftAndMainSubsites extends Extension {
 
 	private static $allowed_actions = array('CopyToSubsite');
 
-	/**
-	 * Normally SubsiteID=0 on a DataObject means it is only accessible from the special "main site".
-	 * However in some situations SubsiteID=0 will be understood as a "globally accessible" object in which
-	 * case this property is set to true (i.e. in AssetAdmin).
-	 */
-	private static $treats_subsite_0_as_global = false;
-
 	function init() {
 		Requirements::css('multisites/css/LeftAndMain_Subsites.css');
 		Requirements::javascript('multisites/javascript/LeftAndMain_Subsites.js');
@@ -38,11 +31,7 @@ class LeftAndMainSubsites extends Extension {
 	 *
 	 * @return ArrayList of {@link Subsite} instances.
 	 */
-	function sectionSites($includeMainSite = true, $mainSiteTitle = "Main site", $member = null) {
-		if($mainSiteTitle == 'Main site') {
-			$mainSiteTitle = _t('Subsites.MainSiteTitle', 'Main site');
-		}
-
+	function sectionSites($member = null) {
 		// Rationalise member arguments
 		if(!$member) $member = Member::currentUser();
 		if(!$member) return new ArrayList();
@@ -64,7 +53,7 @@ class LeftAndMainSubsites extends Extension {
 		$codesPerSite = array();
 		$sitesArray = array();
 		foreach ($codes as $code) {
-			$sites = Subsite::accessible_sites($code, $includeMainSite, $mainSiteTitle, $member);
+			$sites = Subsite::accessible_sites($code, $member);
 			foreach ($sites as $site) {
 				// Build the structure for checking how many codes match.
 				$codesPerSite[$site->ID][$code] = true;
@@ -124,28 +113,6 @@ class LeftAndMainSubsites extends Extension {
 		return $output;
 	}
 
-	public function alternateMenuDisplayCheck($controllerName) {
-		if(!class_exists($controllerName)){
-			return false;
-		}
-
-		// Check subsite support.
-		if(Subsite::currentSubsiteID() == 0){
-			// Main site always supports everything.
-			return true;
-		} else {
-			$controller = singleton($controllerName);
-			if($controller->hasMethod('subsiteCMSShowInMenu') && $controller->subsiteCMSShowInMenu()){
-				return true;
-			}
-		}
-
-		// It's not necessary to check access permissions here. Framework calls canView on the controller,
-		// which in turn uses the Permission API which is augmented by our GroupSubsites.
-
-		return false;
-	}
-
 	public function CanAddSubsites() {
 		return Permission::check("ADMIN", "any", null, "all");
 	}
@@ -154,7 +121,6 @@ class LeftAndMainSubsites extends Extension {
 	 * Helper for testing if the subsite should be adjusted.
 	 */
 	public function shouldChangeSubsite($adminClass, $recordSubsiteID, $currentSubsiteID) {
-		if (Config::inst()->get($adminClass, 'treats_subsite_0_as_global') && $recordSubsiteID==0) return false;
 		if ($recordSubsiteID!=$currentSubsiteID) return true;
 		return false;
 	}
@@ -174,7 +140,7 @@ class LeftAndMainSubsites extends Extension {
 		}
 
 		// Check if we have access to current section on the current subsite.
-		$accessibleSites = $this->owner->sectionSites(true, "Main site", $member);
+		$accessibleSites = $this->owner->sectionSites($member);
 		if ($accessibleSites->count() && $accessibleSites->find('ID', Subsite::currentSubsiteID())) {
 			// Current section can be accessed on the current site, all good.
 			return true;
@@ -256,7 +222,7 @@ class LeftAndMainSubsites extends Extension {
 			foreach($menu as $candidate) {
 				if($candidate->controller && $candidate->controller!=$this->owner->class) {
 
-					$accessibleSites = singleton($candidate->controller)->sectionSites(true, 'Main site', $member);
+					$accessibleSites = singleton($candidate->controller)->sectionSites($member);
 					if ($accessibleSites->count() && $accessibleSites->find('ID', Subsite::currentSubsiteID())) {
 						// Section is accessible, redirect there.
 						return $this->owner->redirect(singleton($candidate->controller)->Link());
@@ -267,7 +233,7 @@ class LeftAndMainSubsites extends Extension {
 			// If no section is available, look for other accessible subsites.
 			foreach($menu as $candidate) {
 				if($candidate->controller) {
-					$accessibleSites = singleton($candidate->controller)->sectionSites(true, 'Main site', $member);
+					$accessibleSites = singleton($candidate->controller)->sectionSites($member);
 					if ($accessibleSites->count()) {
 						Subsite::changeSubsite($accessibleSites->First()->ID);
 						return $this->owner->redirect(singleton($candidate->controller)->Link());

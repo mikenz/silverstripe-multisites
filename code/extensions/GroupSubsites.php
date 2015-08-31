@@ -53,7 +53,7 @@ class GroupSubsites extends DataExtension implements PermissionProvider {
 			// i18n tab
 			$fields->findOrMakeTab('Root.Subsites',_t('GroupSubsites.SECURITYTABTITLE','Subsites'));
 
-			$subsites = Subsite::accessible_sites(array('ADMIN', 'SECURITY_SUBSITE_GROUP'), true);
+			$subsites = Subsite::accessible_sites(array('ADMIN', 'SECURITY_SUBSITE_GROUP'));
 			$subsiteMap = $subsites->map();
 
 			// Prevent XSS injection
@@ -115,8 +115,8 @@ class GroupSubsites extends DataExtension implements PermissionProvider {
 		if(!$query->filtersOnID()) {
 
 			/*if($context = DataObject::context_obj()) $subsiteID = (int)$context->SubsiteID;
-			else */$subsiteID = (int)Subsite::currentSubsiteID();
-			
+			else */$subsiteID = (int)Subsite::currentSubsiteID(true);
+
 			// Don't filter by Group_Subsites if we've already done that
 			$hasGroupSubsites = false;
 			foreach($query->getFrom() as $item) {
@@ -156,7 +156,7 @@ class GroupSubsites extends DataExtension implements PermissionProvider {
 	function onAfterWrite() {
 		// New record test approximated by checking whether the ID has changed.
 		// Note also that the after write test is only used when we're on a subsite
-		if($this->owner->isChanged('ID') && $currentSubsiteID = Subsite::currentSubsiteID()) {
+		if($this->owner->isChanged('ID') && $currentSubsiteID = Subsite::currentSubsiteID(true)) {
 			$subsites = $this->owner->Subsites();
 			$subsites->add($currentSubsiteID);
 		}

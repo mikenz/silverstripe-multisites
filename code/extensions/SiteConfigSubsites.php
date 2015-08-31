@@ -33,7 +33,19 @@ class SiteConfigSubsites extends DataExtension {
 	}
 
 	function onBeforeWrite() {
-		if((!is_numeric($this->owner->ID) || !$this->owner->ID) && !$this->owner->SubsiteID) $this->owner->SubsiteID = Subsite::currentSubsiteID();
+		if((!is_numeric($this->owner->ID) || !$this->owner->ID)) {
+			try {
+				$this->owner->SubsiteID = Subsite::currentSubsiteID();
+			} catch(UnexpectedValueException $e) {
+				// No default subsite, create one
+				$subsite = new Subsite(array(
+					'Title' => 'Default Subsite',
+					'DefaultSite' => 1,
+				));
+				$subsite->write();
+				$this->owner->SubsiteID = $subsite->ID;
+			}
+		}
 	}
 
 	/**

@@ -9,8 +9,8 @@ class Subsite extends DataObject {
 
 	/**
 	 * @var $use_session_subsiteid Boolean Set to TRUE when using the CMS and FALSE
-	 * when browsing the frontend of a website. 
-	 * 
+	 * when browsing the frontend of a website.
+	 *
 	 * @todo Remove flag once the Subsite CMS works without session state,
 	 * similarly to the Translatable module.
 	 */
@@ -82,7 +82,7 @@ class Subsite extends DataObject {
 	 * @uses ControllerSubsites->controllerAugmentInit()
 	 * @return Subsite
 	 */
-	public static function currentSubsite() {
+	public static function currentSubsite($createIfNone = false) {
 		// get_by_id handles caching so we don't have to
 		return DataObject::get_by_id('Subsite', self::currentSubsiteID());
 	}
@@ -98,9 +98,10 @@ class Subsite extends DataObject {
 	 * @todo Pass $request object from controller so we don't have to rely on $_GET
 	 *
 	 * @param boolean $cache
+	 * @param boolean $createIfNone Create a default subsite if one doesn't exist
 	 * @return int ID of the current subsite instance
 	 */
-	public static function currentSubsiteID() {
+	public static function currentSubsiteID($createIfNone = false) {
 		$id = NULL;
 
 		if(isset($_GET['SubsiteID'])) {
@@ -110,7 +111,7 @@ class Subsite extends DataObject {
 		}
 
 		if($id === NULL) {
-			$id = self::getSubsiteIDForDomain();
+			$id = self::getSubsiteIDForDomain(null, true, $createIfNone);
 		}
 
 		return (int)$id;
@@ -150,9 +151,10 @@ class Subsite extends DataObject {
 	 * and all subdomains on *.example.org on another.
 	 * 
 	 * @param $host The host to find the subsite for.  If not specified, $_SERVER['HTTP_HOST'] is used.
+	 * @param boolean $createIfNone Create a default subsite if one doesn't exist
 	 * @return int Subsite ID
 	 */
-	public static function getSubsiteIDForDomain($host = null, $checkPermissions = true) {
+	public static function getSubsiteIDForDomain($host = null, $checkPermissions = true, $createIfNone = false) {
 		if($host == null && isset($_SERVER['HTTP_HOST'])) {
 			$host = $_SERVER['HTTP_HOST'];
 		}
@@ -189,8 +191,17 @@ class Subsite extends DataObject {
 			// Check for a 'default' subsite
 			$subsiteID = $default->ID;
 		} else {
-			// Default subsite id = 0, the main site
-			$subsiteID = 0;
+			// No subsite found
+			if ($createIfNone) {
+				$subsite = new Subsite(array(
+					'Title' => 'Default Subsite',
+					'DefaultSite' => 1,
+				));
+				$subsite->write();
+				$subsiteID = $subsite->ID;
+			} else {
+				throw new UnexpectedValueException("No default subsite defined");
+			}
 		}
 
 		if ($cacheKey) {
@@ -235,20 +246,8 @@ class Subsite extends DataObject {
 	 *
 	 * @return SS_List List of {@link Subsite} objects (DataList or ArrayList).
 	 */
-	public static function all_sites($includeMainSite = true, $mainSiteTitle = "Main site") {
-		$subsites = Subsite::get();
-
-		if($includeMainSite) {
-			$subsites = $subsites->toArray();
-
-			$mainSite = new Subsite();
-			$mainSite->Title = $mainSiteTitle;
-			array_unshift($subsites, $mainSite);
-
-			$subsites = ArrayList::create($subsites);
-		}
-
-		return $subsites;
+	public static function all_sites() {
+		return Subsite::get();
 	}
 
 	/*
@@ -257,7 +256,7 @@ class Subsite extends DataObject {
 	 *
 	 * @return ArrayList of {@link Subsite} instances.
 	 */
-	public static function all_accessible_sites($includeMainSite = true, $mainSiteTitle = "Main site", $member = null) {
+	public static function all_accessible_sites($member = null) {
 		// Rationalise member arguments
 		if(!$member) $member = Member::currentUser();
 		if(!$member) return new ArrayList();
@@ -269,11 +268,7 @@ class Subsite extends DataObject {
 		$menu = CMSMenu::get_viewable_menu_items();
 		foreach($menu as $candidate) {
 			if ($candidate->controller) {
-				$accessibleSites = singleton($candidate->controller)->sectionSites(
-					$includeMainSite,
-					$mainSiteTitle,
-					$member
-				);
+				$accessibleSites = singleton($candidate->controller)->sectionSites($member);
 
 				// Replace existing keys so no one site appears twice.
 				$subsites->merge($accessibleSites);
@@ -290,12 +285,10 @@ class Subsite extends DataObject {
 	 * Sites will only be included if they have a Title.
 	 *
 	 * @param $permCode array|string Either a single permission code or an array of permission codes.
-	 * @param $includeMainSite If true, the main site will be included if appropriate.
-	 * @param $mainSiteTitle The label to give to the main site
 	 * @param $member
 	 * @return DataList of {@link Subsite} instances
 	 */
-	public static function accessible_sites($permCode, $includeMainSite = true, $mainSiteTitle = "Main site", $member = null) {
+	public static function accessible_sites($permCode, $member = null) {
 		// Rationalise member arguments
 		if(!$member) $member = Member::currentUser();
 		if(!$member) return new ArrayList();
@@ -306,7 +299,7 @@ class Subsite extends DataObject {
 		else $SQL_codes = "'" . Convert::raw2sql($permCode) . "'";
 		
 		// Cache handling
-		$cacheKey = $SQL_codes . '-' . $member->ID . '-' . $includeMainSite . '-' . $mainSiteTitle;
+		$cacheKey = $SQL_codes . '-' . $member->ID;
 		if(isset(self::$_cache_accessible_sites[$cacheKey])) {
 			return self::$_cache_accessible_sites[$cacheKey];
 		}
@@ -339,18 +332,6 @@ class Subsite extends DataObject {
 			}
 		}
 
-		if($includeMainSite) {
-			if(!is_array($permCode)) $permCode = array($permCode);
-			if(self::hasMainSitePermission($member, $permCode)) {
-				$subsites=$subsites->toArray();
-				
-				$mainSite = new Subsite();
-				$mainSite->Title = $mainSiteTitle;
-				array_unshift($subsites, $mainSite);
-				$subsites=ArrayList::create($subsites);
-			}
-		}
-		
 		self::$_cache_accessible_sites[$cacheKey] = $subsites;
 
 		return $subsites;
@@ -366,8 +347,8 @@ class Subsite extends DataObject {
 	 */
 	public static function writeHostMap($file = null) {
 		if (!self::$write_hostmap) return;
-		
-		if (!$file) $file = Director::baseFolder().'/subsites/host-map.php';
+
+		if (!$file) $file = Director::baseFolder().'/multisites/host-map.php';
 		$hostmap = array();
 		
 		$subsites = DataObject::get('Subsite');
@@ -520,9 +501,9 @@ class Subsite extends DataObject {
 	public function getCMSFields() {
 		if($this->ID!=0) {
 			$domainTable = new GridField(
-				"Domains", 
-				_t('Subsite.DomainsListTitle',"Domains"), 
-				$this->Domains(), 
+				"Domains",
+				_t('Subsite.DomainsListTitle',"Domains"),
+				$this->Domains(),
 				GridFieldConfig_RecordEditor::create(10)
 			);
 		}else {
@@ -702,10 +683,6 @@ class Subsite extends DataObject {
 				
 				return $domain;
 			}
-			
-		// SubsiteID = 0 is often used to refer to the main site, just return $_SERVER['HTTP_HOST']
-		} else {
-			return $_SERVER['HTTP_HOST'];
 		}
 	}
 	

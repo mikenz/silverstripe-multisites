@@ -1,6 +1,7 @@
 Subsite:
    main:
       Title: Template
+      DefaultSite: 1
    subsite1:
       Title: Subsite1 Template
    subsite2:
@@ -44,9 +45,6 @@ SubsiteDomain:
       Domain: four.www.mysite.com
       IsPrimary: 1
 Page:
-   mainSubsitePage:
-      Title: MainSubsitePage
-      SubsiteID: 0
    home:
       Title: Home
       SubsiteID: =>Subsite.main
@@ -78,10 +76,14 @@ Page:
    subsite2_home:
       Title: Home (Subsite 2)
       SubsiteID: =>Subsite.subsite2
+   domaintest1:
+      Title: Link Target
+      SubsiteID: =>Subsite.domaintest2
+      URLSegment: testpage
    subsite2_contactus:
       Title: Contact Us (Subsite 2)
       SubsiteID: =>Subsite.subsite2
-
+      Content: <a href="http://two.mysite.com/testpage">Test broken link</a>
 PermissionRoleCode:
    roleCode1:
       Code: CMS_ACCESS_CMSMain

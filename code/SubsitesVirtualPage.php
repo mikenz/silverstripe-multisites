@@ -19,12 +19,10 @@ class SubsitesVirtualPage extends VirtualPage {
 		}else {
 			$subsites=ArrayList::create($subsites->toArray());
 		}
-		
-		$subsites->push(new ArrayData(array('Title' => 'Main site', 'ID' => 0)));
 
 		$subsiteSelectionField = new DropdownField(
-			"CopyContentFromID_SubsiteID", 
-			_t('SubsitesVirtualPage.SubsiteField',"Subsite"), 
+			"CopyContentFromID_SubsiteID",
+			_t('SubsitesVirtualPage.SubsiteField',"Subsite"),
 			$subsites->map('ID', 'Title'),
 			($this->CopyContentFromID) ? $this->CopyContentFrom()->SubsiteID : Session::get('SubsiteID')
 		);
@@ -36,8 +34,8 @@ class SubsitesVirtualPage extends VirtualPage {
 		
 		// Setup the linking to the original page.
 		$pageSelectionField = new SubsitesTreeDropdownField(
-			"CopyContentFromID", 
-			_t('VirtualPage.CHOOSE', "Choose a page to link to"), 
+			"CopyContentFromID",
+			_t('VirtualPage.CHOOSE', "Choose a page to link to"),
 			"SiteTree",
 			"ID",
 			"MenuTitle"
@@ -53,8 +51,8 @@ class SubsitesVirtualPage extends VirtualPage {
 		if($this->CopyContentFromID) {
 			$editLink = "admin/pages/edit/show/$this->CopyContentFromID/?SubsiteID=" . $this->CopyContentFrom()->SubsiteID;
 			$linkToContent = "
-				<a class=\"cmsEditlink\" href=\"$editLink\">" . 
-				_t('VirtualPage.EDITCONTENT', 'Click here to edit the content') . 
+				<a class=\"cmsEditlink\" href=\"$editLink\">" .
+				_t('VirtualPage.EDITCONTENT', 'Click here to edit the content') .
 				"</a>";
 			$fields->removeByName("VirtualPageContentLinkLabel");
 			$fields->addFieldToTab(

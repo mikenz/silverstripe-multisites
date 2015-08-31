@@ -17,11 +17,6 @@ class SiteTreeSubsites extends DataExtension {
 		"CrossSubsiteLinkTracking" => array("FieldName" => "Varchar")
 	);
 
-	function isMainSite() {
-		if($this->owner->SubsiteID == 0) return true;
-		return false;
-	}
-	
 	/**
 	 * Update any requests to limit the results to the current site
 	 */
@@ -49,8 +44,8 @@ class SiteTreeSubsites extends DataExtension {
 	}
 	
 	function onBeforeWrite() {
-		if(!$this->owner->ID && !$this->owner->SubsiteID) $this->owner->SubsiteID = Subsite::currentSubsiteID();
-		
+		if(!$this->owner->ID && !$this->owner->SubsiteID) $this->owner->SubsiteID = Subsite::currentSubsiteID(true);
+
 		parent::onBeforeWrite();
 	}
 
@@ -68,8 +63,8 @@ class SiteTreeSubsites extends DataExtension {
 			$fields->addFieldToTab(
 				'Root.Main',
 				new DropdownField(
-					"CopyToSubsiteID", 
-					_t('SiteTreeSubsites.CopyToSubsite', "Copy page to subsite"), 
+					"CopyToSubsiteID",
+					_t('SiteTreeSubsites.CopyToSubsite', "Copy page to subsite"),
 					$subsitesMap,
 					''
 				)
@@ -77,7 +72,7 @@ class SiteTreeSubsites extends DataExtension {
 			$fields->addFieldToTab(
 				'Root.Main',
 				$copyAction = new InlineFormAction(
-					"copytosubsite", 
+					"copytosubsite",
 					_t('SiteTreeSubsites.CopyAction', "Copy")
 				)
 			);
@@ -116,7 +111,7 @@ class SiteTreeSubsites extends DataExtension {
 	 * Only allow editing of a page if the member satisfies one of the following conditions:
 	 * - Is in a group which has access to the subsite this page belongs to
 	 * - Is in a group with edit permissions on the "main site"
-	 * 
+	 *
 	 * @return boolean
 	 */
 	function canEdit($member = null) {
@@ -124,7 +119,7 @@ class SiteTreeSubsites extends DataExtension {
 		if(!$member) $member = Member::currentUser();
 		
 		// Find the sites that this user has access to
-		$goodSites = Subsite::accessible_sites('CMS_ACCESS_CMSMain',true,'all',$member)->column('ID');
+		$goodSites = Subsite::accessible_sites('CMS_ACCESS_CMSMain',$member)->column('ID');
 
 		if (!is_null($this->owner->SubsiteID)) {
 			$subsiteID = $this->owner->SubsiteID;
@@ -252,10 +247,8 @@ class SiteTreeSubsites extends DataExtension {
 				if(strpos($withoutHttp, '/') && strpos($withoutHttp, '/') < strlen($withoutHttp)) {
 					$domain = substr($withoutHttp, 0, strpos($withoutHttp, '/'));
 					$rest = substr($withoutHttp, strpos($withoutHttp, '/') + 1);
-					
-					$subsiteID = Subsite::getSubsiteIDForDomain($domain);
-					if($subsiteID == 0) continue; // We have no idea what the domain for the main site is, so cant track links to it
 
+					$subsiteID = Subsite::getSubsiteIDForDomain($domain);
 					$origDisableSubsiteFilter = Subsite::$disable_subsite_filter;
 					Subsite::disable_subsite_filter(true);
 					$candidatePage = DataObject::get_one("SiteTree", "\"URLSegment\" = '" . Convert::raw2sql(urldecode( $rest)) . "' AND \"SubsiteID\" = " . $subsiteID, false);
@@ -277,7 +270,7 @@ class SiteTreeSubsites extends DataExtension {
 	 * Return a piece of text to keep DataObject cache keys appropriately specific
 	 */
 	function cacheKeyComponent() {
-		return 'subsite-'.Subsite::currentSubsiteID();
+		return 'subsite-'.Subsite::currentSubsiteID(true);
 	}
 	
 	/**
