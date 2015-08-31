@@ -18,7 +18,7 @@ class SubsitesTreeDropdownField extends TreeDropdownField {
 	function Field($properties = array()) {
 		$html = parent::Field($properties);
 
-		Requirements::javascript('multisites/javascript/SubsitesTreeDropdownField.js');
+		Requirements::javascript('simplesubsites/javascript/SubsitesTreeDropdownField.js');
 
 		return $html;
 	}

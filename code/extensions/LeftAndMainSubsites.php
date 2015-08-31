@@ -9,9 +9,9 @@ class LeftAndMainSubsites extends Extension {
 	private static $allowed_actions = array('CopyToSubsite');
 
 	function init() {
-		Requirements::css('multisites/css/LeftAndMain_Subsites.css');
-		Requirements::javascript('multisites/javascript/LeftAndMain_Subsites.js');
-		Requirements::javascript('multisites/javascript/VirtualPage_Subsites.js');
+		Requirements::css('simplesubsites/css/LeftAndMain_Subsites.css');
+		Requirements::javascript('simplesubsites/javascript/LeftAndMain_Subsites.js');
+		Requirements::javascript('simplesubsites/javascript/VirtualPage_Subsites.js');
 	}
 
 	/**
@@ -96,7 +96,7 @@ class LeftAndMainSubsites extends Extension {
 			return false;
 		}
 
-		Requirements::javascript('multisites/javascript/LeftAndMain_Subsites.js');
+		Requirements::javascript('simplesubsites/javascript/LeftAndMain_Subsites.js');
 
 		$output = new ArrayList();
 

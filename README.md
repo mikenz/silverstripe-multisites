@@ -1,4 +1,4 @@
-# Multisites Module
+# Simple Subsites Module
 
 This is a fork of the [Silverstripe Subsites](https://github.com/silverstripe/silverstripe-subsites) module.
 

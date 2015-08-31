@@ -1,5 +1,5 @@
 {
-	"name": "silverstripe/multisites",
+	"name": "mikenz/silverstripe-simplesubsites",
 	"description": "Run multiple sites from a single SilverStripe install.",
 	"type": "silverstripe-module",
 	"keywords": [
@@ -24,10 +24,5 @@
 	},
 	"require-dev": {
 		"phpunit/PHPUnit": "~3.7@stable"
-	},
-	"extra": {
-		"branch-alias": {
-			"dev-master": "1.2.x-dev"
-		}
 	}
 }

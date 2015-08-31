@@ -12,7 +12,7 @@ class SubsiteAdmin extends ModelAdmin {
 
 	private static $menu_title = "Subsites";
 
-	private static $menu_icon = "multisites/images/subsites.png";
+	private static $menu_icon = "simplesubsites/images/subsites.png";
 
 	public $showImportForm=false;
 

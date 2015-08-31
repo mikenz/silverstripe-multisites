@@ -1,7 +1,7 @@
 <?php
 
 class SubsiteAdminTest extends BaseSubsiteTest {
-	static $fixture_file = 'multisites/tests/SubsiteTest.yml';
+	static $fixture_file = 'simplesubsites/tests/SubsiteTest.yml';
 
     function adminLoggedInSession() {
         return new Session(array(

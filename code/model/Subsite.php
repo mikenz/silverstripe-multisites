@@ -348,7 +348,7 @@ class Subsite extends DataObject {
 	public static function writeHostMap($file = null) {
 		if (!self::$write_hostmap) return;
 
-		if (!$file) $file = Director::baseFolder().'/multisites/host-map.php';
+		if (!$file) $file = Director::baseFolder().'/simplesubsites/host-map.php';
 		$hostmap = array();
 
 		$subsites = DataObject::get('Subsite');

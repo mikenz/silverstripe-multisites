@@ -1,7 +1,7 @@
 <?php
 class BaseSubsiteTest extends SapphireTest {
 
-	static $fixture_file = 'multisites/tests/BaseSubsiteTest.yml';
+	static $fixture_file = 'simplesubsites/tests/BaseSubsiteTest.yml';
 
 	function setUp() {
 		parent::setUp();
