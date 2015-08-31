@@ -1,8 +1,8 @@
 <?php
 
 class LeftAndMainSubsitesTest extends FunctionalTest {
-	
-	static $fixture_file = 'subsites/tests/SubsiteTest.yml';
+
+	static $fixture_file = 'multisites/tests/SubsiteTest.yml';
 
 	/**
 	 * Avoid subsites filtering on fixture fetching.

@@ -1,8 +1,8 @@
 <?php
 
 class GroupSubsitesTest extends BaseSubsiteTest {
-	static $fixture_file = 'subsites/tests/SubsiteTest.yml';
-	
+	static $fixture_file = 'multisites/tests/SubsiteTest.yml';
+
 	protected $requireDefaultRecordsFrom = array('GroupSubsites');
 	
 	function testTrivialFeatures() {

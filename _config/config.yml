@@ -1,5 +1,5 @@
 ---
-Name: mysiteconfig
+Name: multisites
 After: 'framework/*','cms/*'
 ---
 AssetAdmin:

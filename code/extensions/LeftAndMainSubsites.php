@@ -16,9 +16,9 @@ class LeftAndMainSubsites extends Extension {
 	private static $treats_subsite_0_as_global = false;
 
 	function init() {
-		Requirements::css('subsites/css/LeftAndMain_Subsites.css');
-		Requirements::javascript('subsites/javascript/LeftAndMain_Subsites.js');
-		Requirements::javascript('subsites/javascript/VirtualPage_Subsites.js');
+		Requirements::css('multisites/css/LeftAndMain_Subsites.css');
+		Requirements::javascript('multisites/javascript/LeftAndMain_Subsites.js');
+		Requirements::javascript('multisites/javascript/VirtualPage_Subsites.js');
 	}
 
 	/**
@@ -107,7 +107,7 @@ class LeftAndMainSubsites extends Extension {
 			return false;
 		}
 
-		Requirements::javascript('subsites/javascript/LeftAndMain_Subsites.js');
+		Requirements::javascript('multisites/javascript/LeftAndMain_Subsites.js');
 
 		$output = new ArrayList();
 

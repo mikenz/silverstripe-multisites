@@ -1,12 +1,20 @@
 {
-	"name": "silverstripe/subsites",
+	"name": "silverstripe/multisites",
 	"description": "Run multiple sites from a single SilverStripe install.",
 	"type": "silverstripe-module",
-	"keywords": ["silverstripe", "subsites", "multisite"],
+	"keywords": [
+		"silverstripe",
+		"subsites",
+		"multisite",
+		"multisites"
+	],
 	"authors": [
 		{
 			"name": "Sam Minnee",
 			"email": "sam@silverstripe.com"
+		},{
+			"name": "Mike Cochrane",
+			"email": "mikec@mikenz.geek.nz"
 		}
 	],
 	"require":

@@ -2,8 +2,8 @@
 
 class SiteTreeSubsitesTest extends BaseSubsiteTest {
 
-	static $fixture_file = 'subsites/tests/SubsiteTest.yml';
-	
+	static $fixture_file = 'multisites/tests/SubsiteTest.yml';
+
 	protected $extraDataObjects = array(
 		'SiteTreeSubsitesTest_ClassA',
 		'SiteTreeSubsitesTest_ClassB'

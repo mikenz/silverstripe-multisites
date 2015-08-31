@@ -1,8 +1,8 @@
 <?php
 
 class SiteConfigSubsitesTest extends BaseSubsiteTest {
-	static $fixture_file = 'subsites/tests/SubsiteTest.yml';
-	
+	static $fixture_file = 'multisites/tests/SubsiteTest.yml';
+
 	function testEachSubsiteHasAUniqueSiteConfig() {
 		$subsite1 = $this->objFromFixture('Subsite', 'domaintest1');
 		$subsite2 = $this->objFromFixture('Subsite', 'domaintest2');

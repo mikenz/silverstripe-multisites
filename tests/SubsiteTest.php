@@ -2,8 +2,8 @@
 
 class SubsiteTest extends BaseSubsiteTest {
 
-	static $fixture_file = 'subsites/tests/SubsiteTest.yml';
-	
+	static $fixture_file = 'multisites/tests/SubsiteTest.yml';
+
 	function setUp() {
 		parent::setUp();
 		
