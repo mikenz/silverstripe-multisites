@@ -24,3 +24,4 @@ CMSPagesController::add_extension('SubsiteMenuExtension');
 SubsiteAdmin::add_extension('SubsiteMenuExtension');
 CMSSettingsController::add_extension('SubsiteMenuExtension');
 
+CMSMenu::remove_menu_item('SubsiteXHRController');

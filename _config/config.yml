@@ -2,3 +2,7 @@
 Name: multisites
 After: 'framework/*','cms/*'
 ---
+Director:
+  rules:
+    'SubsiteXHRController': 'SubsiteXHRController'
+---
