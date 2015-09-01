@@ -90,7 +90,9 @@ class SiteTreeSubsites extends DataExtension {
 			);
 
 			$urlsegment = $fields->dataFieldByName('URLSegment');
-			$urlsegment->setURLPrefix($baseLink);
+			if ($urlsegment) {
+				$urlsegment->setURLPrefix($baseLink);
+			}
 		}
 	}
 
