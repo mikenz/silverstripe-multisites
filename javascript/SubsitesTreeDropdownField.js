@@ -3,15 +3,16 @@
 		$('.TreeDropdownField').entwine({
 			subsiteID: function() {
 				var subsiteSel = $('#CopyContentFromID_SubsiteID select')[0];
+				if (!subsiteSel) {
+					subsiteSel = $('select[name=CopyContentFromIDSubsiteID]')[0];
+				}
+
 				if(!subsiteSel) return;
 
 				subsiteSel.onchange = (function() {
-					this.createTreeNode(true);
-					this.ajaxGetTree((function(response) {
-						this.newTreeReady(response, true);
-						this.updateTreeLabel();
-					}).bind(this));
+					this.loadTree(null, this._riseUp);
 				}).bind(this);
+
 				return subsiteSel.options[subsiteSel.selectedIndex].value;
 			},
 
