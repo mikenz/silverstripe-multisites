@@ -68,6 +68,15 @@ class Subsite extends DataObject {
 	public static $check_is_public = true;
 
 	/**
+	 * @return array
+	 */
+	private static $summary_fields = array(
+		'Title',
+		'PrimaryDomain',
+		'IsPublic'
+	);
+
+	/**
 	 * Set allowed themes
 	 *
 	 * @param array $themes - Numeric array of all themes which are allowed to be selected for all subsites.
