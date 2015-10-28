@@ -1,6 +1,8 @@
 ---
 Name: multisites
-After: 'framework/*','cms/*'
+After:
+  - 'framework/*'
+  - 'cms/*'
 ---
 Director:
   rules:
