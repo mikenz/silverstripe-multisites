@@ -19,8 +19,8 @@
 	],
 	"require":
 	{
-		"silverstripe/framework": "~4.0",
-		"silverstripe/cms": "~4.0"
+		"silverstripe/framework": "dev-master",
+		"silverstripe/cms": "dev-master"
 	},
 	"require-dev": {
 		"phpunit/PHPUnit": "~3.7@stable"
