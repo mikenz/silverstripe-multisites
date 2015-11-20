@@ -26,7 +26,7 @@ class SubsitesVirtualPage extends VirtualPage {
 			$subsites->map('ID', 'Title'),
 			($this->CopyContentFromID) ? $this->CopyContentFrom()->SubsiteID : Session::get('SubsiteID')
 		);
-		$subsiteSelectionField->addExtraClass('subsitestreedropdownfield-chooser no-change-track')
+		$subsiteSelectionField->addExtraClass('subsitestreedropdownfield-chooser no-change-track');
 
 		$fields->addFieldToTab(
 			'Root.Main',
