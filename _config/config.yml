@@ -7,4 +7,3 @@ After:
 Director:
   rules:
     'SubsiteXHRController': 'SubsiteXHRController'
----
