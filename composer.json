@@ -27,5 +27,6 @@
 	},
 	"extra": {
 		"installer-name": "simplesubsites"
-	}
+	},
+	"license": "BSD-3-Clause"
 }
