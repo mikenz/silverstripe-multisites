@@ -1,8 +1,8 @@
 ---
-Name: multisites
+Name: subsiteconfig
 After:
-  - 'framework/*'
-  - 'cms/*'
+ - 'framework/*'
+ - 'cms/*'
 ---
 Director:
   rules:
