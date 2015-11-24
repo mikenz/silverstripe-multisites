@@ -92,7 +92,7 @@ class LeftAndMainSubsites extends Extension {
 		$list = $this->Subsites();
 		$currentSubsiteID = Subsite::currentSubsiteID();
 
-		if($list == null || $list->Count() == 1 && $list->First()->DefaultSite == true){
+		if($list == null || $list->Count() == 1){
 			return false;
 		}
 

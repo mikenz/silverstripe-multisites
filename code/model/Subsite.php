@@ -63,17 +63,11 @@ class Subsite extends DataObject {
 	public static $strict_subdomain_matching = false;
 
 	/**
-	 * @var boolean Respects the IsPublic flag when retrieving subsites
-	 */
-	public static $check_is_public = true;
-
-	/**
 	 * @return array
 	 */
 	private static $summary_fields = array(
 		'Title',
 		'PrimaryDomain',
-		'IsPublic'
 	);
 
 	/**
@@ -99,8 +93,7 @@ class Subsite extends DataObject {
 	/**
 	 * This function gets the current subsite ID from the session. It used in the backend so Ajax requests
 	 * use the correct subsite. The frontend handles subsites differently. It calls getSubsiteIDForDomain
-	 * directly from ModelAsController::getNestedController. Only gets Subsite instances which have their
-	 * {@link IsPublic} flag set to TRUE.
+	 * directly from ModelAsController::getNestedController.
 	 *
 	 * You can simulate subsite access without creating virtual hosts by appending ?SubsiteID=<ID> to the request.
 	 *
@@ -173,7 +166,7 @@ class Subsite extends DataObject {
 		if ($host) {
 			if(!self::$strict_subdomain_matching) $host = preg_replace('/^www\./', '', $host);
 
-			$cacheKey = implode('_', array($host, Member::currentUserID(), self::$check_is_public));
+			$cacheKey = implode('_', array($host, Member::currentUserID()));
 			if(isset(self::$_cache_subsite_for_domain[$cacheKey])) return self::$_cache_subsite_for_domain[$cacheKey];
 
 			$SQL_host = Convert::raw2sql($host);
@@ -181,7 +174,7 @@ class Subsite extends DataObject {
 				"SubsiteDomain",
 				"'$SQL_host' LIKE replace(\"SubsiteDomain\".\"Domain\",'*','%')",
 				"\"IsPrimary\" DESC"
-			)->innerJoin('Subsite', "\"Subsite\".\"ID\" = \"SubsiteDomain\".\"SubsiteID\" AND \"Subsite\".\"IsPublic\"=1");
+			)->innerJoin('Subsite', "\"Subsite\".\"ID\" = \"SubsiteDomain\".\"SubsiteID\"");
 		}
 
 		if($matchingDomains && $matchingDomains->Count()) {
@@ -196,20 +189,16 @@ class Subsite extends DataObject {
 			}
 
 			$subsiteID = $subsiteIDs[0];
-		} else if($default = DataObject::get_one('Subsite', "\"DefaultSite\" = 1")) {
-			// Check for a 'default' subsite
-			$subsiteID = $default->ID;
 		} else {
 			// No subsite found
 			if ($createIfNone) {
 				$subsite = new Subsite(array(
-					'Title' => 'Default Subsite',
-					'DefaultSite' => 1,
+					'Title' => 'First Subsite',
 				));
 				$subsite->write();
 				$subsiteID = $subsite->ID;
 			} else {
-				throw new UnexpectedValueException("No default subsite defined");
+				throw new UnexpectedValueException("No subsite defined");
 			}
 		}
 
@@ -369,7 +358,6 @@ class Subsite extends DataObject {
 				if(!self::$strict_subdomain_matching) $domainStr = preg_replace('/^www\./', '', $domainStr);
 				$hostmap[$domainStr] = $subsite->domain();
 			}
-			if ($subsite->DefaultSite) $hostmap['default'] = $subsite->domain();
 		}
 
 		$data = "<?php \n";
@@ -442,13 +430,8 @@ class Subsite extends DataObject {
 	private static $db = array(
 		'Title' => 'Varchar(255)',
 		'RedirectURL' => 'Varchar(255)',
-		'DefaultSite' => 'Boolean',
 		'Theme' => 'Varchar',
 		'Language' => 'Varchar(6)',
-
-		// Used to hide unfinished/private subsites from public view.
-		// If unset, will default to true
-		'IsPublic' => 'Boolean',
 
 		// Comma-separated list of disallowed page types
 		'PageTypeBlacklist' => 'Text',
@@ -475,7 +458,6 @@ class Subsite extends DataObject {
 	 * @var array
 	 */
 	private static $defaults = array(
-		'IsPublic' => 1
 	);
 
 	/**
@@ -485,7 +467,6 @@ class Subsite extends DataObject {
 	private static $searchable_fields = array(
 		'Title',
 		'Domains.Domain',
-		'IsPublic',
 	);
 
 	/**
@@ -549,8 +530,6 @@ class Subsite extends DataObject {
 					$domainTable,
 					$languageSelector,
 					// new TextField('RedirectURL', 'Redirect to URL', $this->RedirectURL),
-					new CheckboxField('DefaultSite', $this->fieldLabel('DefaultSite'), $this->DefaultSite),
-					new CheckboxField('IsPublic', $this->fieldLabel('IsPublic'), $this->IsPublic),
 
 					new DropdownField('Theme',$this->fieldLabel('Theme'), $this->allowedThemes(), $this->Theme),
 
@@ -587,11 +566,8 @@ class Subsite extends DataObject {
 	public function fieldLabels($includerelations = true) {
 		$labels = parent::fieldLabels($includerelations);
 		$labels['Title'] = _t('Subsites.TitleFieldLabel', 'Subsite Name');
-		$labels['RedirectURL'] = _t('Subsites.RedirectURLFieldLabel', 'Redirect URL');
-		$labels['DefaultSite'] = _t('Subsites.DefaultSiteFieldLabel', 'Default site');
 		$labels['Theme'] = _t('Subsites.ThemeFieldLabel', 'Theme');
 		$labels['Language'] = _t('Subsites.LanguageFieldLabel', 'Language');
-		$labels['IsPublic'] = _t('Subsites.IsPublicFieldLabel', 'Enable public access');
 		$labels['PageTypeBlacklist'] = _t('Subsites.PageTypeBlacklistFieldLabel', 'Page Type Blacklist');
 		$labels['Domains.Domain'] = _t('Subsites.DomainFieldLabel', 'Domain');
 		$labels['PrimaryDomain'] = _t('Subsites.PrimaryDomainFieldLabel', 'Primary Domain');
@@ -607,7 +583,6 @@ class Subsite extends DataObject {
 		return array(
 			'Title' => $this->fieldLabel('Title'),
 			'PrimaryDomain' => $this->fieldLabel('PrimaryDomain'),
-			'IsPublic' => _t('Subsite.IsPublicHeaderField','Active subsite'),
 		);
 	}
 

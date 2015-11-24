@@ -33,7 +33,6 @@ de:
     DOMAINSAVEFIRST: 'Domains können erst nach dem ersten Speichern hinzugefügt werden'
     DomainsHeadline: 'Domains für diese Subsite'
     DomainsListTitle: Domains
-    IsPublicHeaderField: 'Aktive Subsite'
     NOTEMPLATE: 'Kein Template'
     PLURALNAME: Subsites
     PageTypeBlacklistField: 'Seitentyp verbieten?'
@@ -50,9 +49,7 @@ de:
   SubsiteReportWrapper:
     ReportDropdown: Seiten
   Subsites:
-    DefaultSiteFieldLabel: 'Standard Seite'
     DomainFieldLabel: Domäne
-    IsPublicFieldLabel: 'Öffentlich zugänglich'
     LanguageFieldLabel: Sprache
     MainSiteTitle: 'Hauptsite'
     PageTypeBlacklistFieldLabel: 'Ausgeschlossene Seitentypen'

@@ -33,7 +33,6 @@ fi:
     DOMAINSAVEFIRST: 'Voit lisätä domain-osoitteita vasta tallentamisen jälkeen'
     DomainsHeadline: 'Tämän alisivuston domainit'
     DomainsListTitle: Domainit
-    IsPublicHeaderField: 'Aktiivinen alisivusto'
     NOTEMPLATE: 'Ei sivupohjaa'
     PLURALNAME: Alasivustot
     PageTypeBlacklistField: 'Kiellä sivutyyppien käyttö?'
@@ -50,9 +49,7 @@ fi:
   SubsiteReportWrapper:
     ReportDropdown: Sivustot
   Subsites:
-    DefaultSiteFieldLabel: 'Oletussivusto'
     DomainFieldLabel: Domain
-    IsPublicFieldLabel: 'Aktivoi julkinen pääsy'
     LanguageFieldLabel: Kieli
     MainSiteTitle: 'Pääsivusto'
     PageTypeBlacklistFieldLabel: 'Sivutyyppien mustalista'

@@ -57,9 +57,7 @@ class SiteTreeSubsites extends DataExtension {
 			unset($subsitesMap[$this->owner->SubsiteID]);
 		}
 
-		// Master page edit field (only allowed from default subsite to avoid inconsistent relationships)
-		$isDefaultSubsite = $this->owner->SubsiteID == 0 || $this->owner->Subsite()->DefaultSite;
-		if($isDefaultSubsite && $subsitesMap) {
+		if($subsites->Count() > 1 && $subsitesMap) {
 			$fields->addFieldToTab(
 				'Root.Main',
 				new DropdownField(

@@ -33,7 +33,6 @@ eo:
     DOMAINSAVEFIRST: 'Vi povas aldoni domajnojn post konservante unuafoje'
     DomainsHeadline: 'Domajnoj por ĉi tiu subretejo'
     DomainsListTitle: Domajnoj
-    IsPublicHeaderField: 'Aktiva subretejo'
     NOTEMPLATE: 'Mankas ŝablono'
     PLURALNAME: Subretejoj
     PageTypeBlacklistField: 'Ĉu malpermesu paĝajn tipojn?'
@@ -50,9 +49,7 @@ eo:
   SubsiteReportWrapper:
     ReportDropdown: Retejoj
   Subsites:
-    DefaultSiteFieldLabel: 'Apriora retejo'
     DomainFieldLabel: Domajno
-    IsPublicFieldLabel: 'Enŝalti publikan aliron'
     LanguageFieldLabel: Lingvo
     MainSiteTitle: 'Ĉefa retejo'
     PageTypeBlacklistFieldLabel: 'Paĝtipa nigra listo'

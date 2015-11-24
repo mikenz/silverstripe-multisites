@@ -33,7 +33,6 @@ ar:
     DOMAINSAVEFIRST: 'لا يمكنك إضافة النطاقات إلا بعد القيام بالحفظ لأول مرة'
     DomainsHeadline: 'نطاقات هذا الموقع الفرعي'
     DomainsListTitle: النطاقات
-    IsPublicHeaderField: 'موقع فرعي نشط'
     NOTEMPLATE: 'بدون قالب'
     PLURALNAME: المواقع الفرعية
     PageTypeBlacklistField: 'عدم السماح بأصناف الصفحات؟'
@@ -50,9 +49,7 @@ ar:
   SubsiteReportWrapper:
     ReportDropdown: المواقع
   Subsites:
-    DefaultSiteFieldLabel: 'الموقع الافتراضي'
     DomainFieldLabel: النطاق
-    IsPublicFieldLabel: 'تفعيل نفاذ العامّة'
     LanguageFieldLabel: اللغة
     MainSiteTitle: 'الموقع الرئيسي'
     PageTypeBlacklistFieldLabel: 'نوع الصفحة قائمة سوداء'

@@ -32,7 +32,6 @@ en:
     DOMAINSAVEFIRST: 'You can only add domains after saving for the first time'
     DomainsHeadline: 'Domains for this subsite'
     DomainsListTitle: Domains
-    IsPublicHeaderField: 'Active subsite'
     NOTEMPLATE: 'No template'
     PLURALNAME: Subsites
     PageTypeBlacklistField: 'Disallow page types?'
@@ -53,9 +52,7 @@ en:
   SubsiteXHRController:
     MENUTITLE: SubsiteXHRController
   Subsites:
-    DefaultSiteFieldLabel: 'Default site'
     DomainFieldLabel: Domain
-    IsPublicFieldLabel: 'Enable public access'
     LanguageFieldLabel: Language
     MainSiteTitle: 'Main site'
     PageTypeBlacklistFieldLabel: 'Page Type Blacklist'

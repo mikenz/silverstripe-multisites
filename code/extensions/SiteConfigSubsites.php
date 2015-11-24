@@ -39,8 +39,7 @@ class SiteConfigSubsites extends DataExtension {
 			} catch(UnexpectedValueException $e) {
 				// No default subsite, create one
 				$subsite = new Subsite(array(
-					'Title' => 'Default Subsite',
-					'DefaultSite' => 1,
+					'Title' => 'First Subsite',
 				));
 				$subsite->write();
 				$this->owner->SubsiteID = $subsite->ID;

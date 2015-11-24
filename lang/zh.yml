@@ -33,7 +33,6 @@ zh:
     DOMAINSAVEFIRST: '只有当您第一次保存后，才能添加域名'
     DomainsHeadline: '这个子网站的域名'
     DomainsListTitle: 域名
-    IsPublicHeaderField: '活跃的子网站'
     NOTEMPLATE: '没有模板'
     PLURALNAME: 多个子网站
     PageTypeBlacklistField: '禁止页面类型？'
@@ -50,9 +49,7 @@ zh:
   SubsiteReportWrapper:
     ReportDropdown: 网站
   Subsites:
-    DefaultSiteFieldLabel: '默认网站'
     DomainFieldLabel: 域名
-    IsPublicFieldLabel: '启用公共访问权'
     LanguageFieldLabel: 语言
     MainSiteTitle: '主网站'
     PageTypeBlacklistFieldLabel: '页面类型黑名单'

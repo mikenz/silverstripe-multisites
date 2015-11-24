@@ -8,8 +8,10 @@ This is a fork of the [Silverstripe Subsites](https://github.com/silverstripe/si
  * Silverstripe 4.0 compatible
  * Remove subsites option in "Files" that gave the illusion that file would only be available on one domain
  * Main menu items are available no mater what subsite is selected
+ * Remove 'Enable public access' and 'Default site' features. This should be done before the request gets to
+	Silverstripe (eg by a caching/SSL termination appliance or Webserver config).
 
-This should be a drop in replacement for the silverstripe subsites module except You will lose access to all pages from
+This should be a drop in replacement for the silverstripe subsites module except you will lose access to all pages from
 the "main site" unless you do some database hacking.
 
 
@@ -52,11 +54,11 @@ For user documentation please see:
 
  * Each subsite domain name has to be set up on the server first, and DNS records need to be updated as appropriate.
  * A subsite cannot use a different codebase as the main site, they are intrinsically tied
- 	* However, you can remove page types from a subsite when creating the subsite - [see the setup documentation for further details](set_up.md)
+	* However, you can remove page types from a subsite when creating the subsite - [see the setup documentation for further details](set_up.md)
  * The only code a developer can edit between subsites is the theme
  * The separation between subsites in the CMS needs to be seen as cosmetic, and mostly applicable to the "Pages" and "Files" sections of the CMS.
  * All subsites run in the same process space and data set. Therefore if an outage affects one subsite it will affect all subsites, and if bad code or hardware corrupts one subsite's data, it's very likely that it has corrupted all subsite data.
- 	* This principle applies to application error, security vulnerabilities and high levels of traffic
+	* This principle applies to application error, security vulnerabilities and high levels of traffic
  * It is not currently possible to backup or restore the data from a single subsite.
  * It is awkward (but not impossible) to have separate teams of developers working on different subsites - primarily because of the level of collaboration needed. It is more suited to the same group of developers being responsible for all of the subsites.
 
@@ -177,18 +179,6 @@ or by defining the subsiteCMSShowInMenu function in your admin:
 
 
 ### Public display of a subsite
-
-By default, each subsite is available to the public (= not logged-in),
-provided a correct host mapping is set up. A subsite can be marked as non-public
-in its settings, in which case it only shows if a user with CMS permissions is logged in.
-This is useful to create and check subsites on a live system before publishing them.
-
-Please note that you need to filter for this manually in your own queries:
-
-	$publicSubsites = DataObject::get(
-		'Subsite',
-		Subsite::$check_is_public ? '"IsPublic"=1' : '';
-	);
 
 To ensure the logged-in status of a member is carried across to subdomains,
 you also need to configure PHP session cookies to be set

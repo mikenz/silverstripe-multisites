@@ -1,7 +1,6 @@
 Subsite:
    main:
       Title: Template
-      DefaultSite: 1
    subsite1:
       Title: Subsite1 Template
    subsite2:
@@ -35,7 +34,7 @@ SubsiteDomain:
       IsPrimary: 1
    dt2b:
       SubsiteID: =>Subsite.domaintest2
-      Domain: *.mysite.com
+      Domain: \*.mysite.com
    dt3:
       SubsiteID: =>Subsite.domaintest3
       Domain: three.*

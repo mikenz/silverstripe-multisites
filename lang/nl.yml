@@ -23,7 +23,6 @@ nl:
     PLURALNAME: 'Subsite Domeinen'
     SINGULARNAME: 'Subsite Domein'
   Subsites:
-    DefaultSiteFieldLabel: 'Standaard Site'
     LanguageFieldLabel: Taal
     PrimaryDomainFieldLabel: 'Primaire domein'
     ThemeFieldLabel: Thema

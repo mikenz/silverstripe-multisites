@@ -33,7 +33,6 @@ mi:
     DOMAINSAVEFIRST: 'Ka taea noa iho te tāpiri rohe i muri i te tiakinga tuatahitanga'
     DomainsHeadline: 'Ngā rohe mō tēnei pae iti'
     DomainsListTitle: Ngā Rohe
-    IsPublicHeaderField: 'Pae iti hohe'
     NOTEMPLATE: 'Kāore he tātauira'
     PLURALNAME: Ngā pae iti
     PageTypeBlacklistField: 'Me whakakāhore ngā momo whārangi?'
@@ -50,9 +49,7 @@ mi:
   SubsiteReportWrapper:
     ReportDropdown: Ngā Pae
   Subsites:
-    DefaultSiteFieldLabel: 'Pae taunoa'
     DomainFieldLabel: Rohe
-    IsPublicFieldLabel: 'Whakahohe urunga tūmatatanui'
     LanguageFieldLabel: Reo
     MainSiteTitle: 'Pae matua'
     PageTypeBlacklistFieldLabel: 'Rārangirāhui Momo Whārangi'
