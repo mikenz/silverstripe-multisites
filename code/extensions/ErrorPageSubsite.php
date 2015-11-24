@@ -6,7 +6,7 @@ class ErrorPageSubsite extends DataExtension {
 	 *
 	 * {@see Error::get_error_filename()}
 	 *
-	 * FIXME since {@link Subsite::currentSubsite()} partly relies on Session, viewing other sub-site (including main site) between 
+	 * FIXME since {@link Subsite::currentSubsite()} partly relies on Session, viewing other sub-site (including main site) between
 	 * opening ErrorPage in the CMS and publish ErrorPage causes static error page to get generated incorrectly.
 	 *
 	 * @param string $name Filename to write to
@@ -32,14 +32,6 @@ class ErrorPageSubsite extends DataExtension {
 			$subdomain = $subsite->domain();
 			$name = substr($name, 0, -5) . "-{$subdomain}.html";
 		}
-
-		if(singleton('SiteTree')->hasExtension('Translatable') && $locale && $locale != Translatable::default_locale()) {
-			$filepath = $static_filepath . "/error-{$statusCode}-{$locale}{$subdomainPart}.html";
-		} else {
-			$filepath = $static_filepath . "/error-{$statusCode}{$subdomainPart}.html";
-		}
-
-		return $filepath;
 	}
 
 }

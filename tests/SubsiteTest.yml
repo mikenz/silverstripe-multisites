@@ -11,9 +11,9 @@ Subsite:
     Title: 'Test 2'
   domaintest3:
     Title: 'Test 3'
-   domaintest4:
-      Title: 'Test 4'
-      Language: 'en_NZ'
+  domaintest4:
+    Title: 'Test 4'
+    Language: 'en_NZ'
 SubsiteDomain:
   subsite1:
     SubsiteID: =>Subsite.subsite1
@@ -39,10 +39,10 @@ SubsiteDomain:
     SubsiteID: =>Subsite.domaintest3
     Domain: 'three.*'
     IsPrimary: 1
-   dt4:
-      SubsiteID: =>Subsite.domaintest4
-      Domain: four.www.mysite.com
-      IsPrimary: 1
+  dt4:
+    SubsiteID: =>Subsite.domaintest4
+    Domain: four.www.mysite.com
+    IsPrimary: 1
 Page:
   mainSubsitePage:
     Title: 'MainSubsitePage'
@@ -81,7 +81,7 @@ Page:
   subsite2_contactus:
     Title: 'Contact Us (Subsite 2)'
     SubsiteID: =>Subsite.subsite2
-      Content: <a href="http://two.mysite.com/testpage">Test broken link</a>
+    Content: <a href="http://two.mysite.com/testpage">Test broken link</a>
 PermissionRoleCode:
   roleCode1:
     Code: CMS_ACCESS_CMSMain

@@ -16,5 +16,3 @@ class ControllerSubsites extends Extension {
 		}
 	}
 }
-
-?>
