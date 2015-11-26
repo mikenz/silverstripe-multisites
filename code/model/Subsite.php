@@ -103,7 +103,7 @@ class Subsite extends DataObject {
 	 * @param boolean $createIfNone Create a default subsite if one doesn't exist
 	 * @return int ID of the current subsite instance
 	 */
-	public static function currentSubsiteID($createIfNone = false) {
+	public static function currentSubsiteID() {
 		$id = NULL;
 
 		if(isset($_GET['SubsiteID'])) {
@@ -113,7 +113,7 @@ class Subsite extends DataObject {
 		}
 
 		if($id === NULL) {
-			$id = self::getSubsiteIDForDomain(null, true, $createIfNone);
+			$id = self::getSubsiteIDForDomain(null, true);
 		}
 
 		return (int)$id;
@@ -153,10 +153,9 @@ class Subsite extends DataObject {
 	 * and all subdomains on *.example.org on another.
 	 *
 	 * @param $host The host to find the subsite for.  If not specified, $_SERVER['HTTP_HOST'] is used.
-	 * @param boolean $createIfNone Create a default subsite if one doesn't exist
-	 * @return int Subsite ID
+	 * @return int Subsite ID or False
 	 */
-	public static function getSubsiteIDForDomain($host = null, $checkPermissions = true, $createIfNone = false) {
+	public static function getSubsiteIDForDomain($host = null, $checkPermissions = true) {
 		if($host == null && isset($_SERVER['HTTP_HOST'])) {
 			$host = $_SERVER['HTTP_HOST'];
 		}
@@ -181,25 +180,13 @@ class Subsite extends DataObject {
 			$subsiteIDs = array_unique($matchingDomains->column('SubsiteID'));
 			$subsiteDomains = array_unique($matchingDomains->column('Domain'));
 			if(sizeof($subsiteIDs) > 1) {
-				throw new UnexpectedValueException(sprintf(
-					"Multiple subsites match on '%s': %s",
-					$host,
-					implode(',', $subsiteDomains)
-				));
+				// Multiple subsite matches
+				return FALSE;
 			}
 
 			$subsiteID = $subsiteIDs[0];
 		} else {
-			// No subsite found
-			if ($createIfNone) {
-				$subsite = new Subsite(array(
-					'Title' => 'First Subsite',
-				));
-				$subsite->write();
-				$subsiteID = $subsite->ID;
-			} else {
-				throw new UnexpectedValueException("No subsite defined");
-			}
+			$subsiteID = FALSE;
 		}
 
 		if ($cacheKey) {

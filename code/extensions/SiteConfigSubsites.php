@@ -22,28 +22,22 @@ class SiteConfigSubsites extends DataExtension {
 			if(preg_match($regexp, $predicate)) return;
 		}
 
-		/*if($context = DataObject::context_obj()) $subsiteID = (int)$context->SubsiteID;
-		else */$subsiteID = (int)Subsite::currentSubsiteID();
+		try {
+			$subsiteID = (int)Subsite::currentSubsiteID();
 
-		$froms=$query->getFrom();
-		$froms=array_keys($froms);
-		$tableName = array_shift($froms);
-		if($tableName != 'SiteConfig') return;
-		$query->addWhere("\"$tableName\".\"SubsiteID\" IN ($subsiteID)");
+			$froms=$query->getFrom();
+			$froms=array_keys($froms);
+			$tableName = array_shift($froms);
+			if($tableName != 'SiteConfig') return;
+			$query->addWhere("\"$tableName\".\"SubsiteID\" IN ($subsiteID)");
+		} catch(UnexpectedValueException $e) {
+			// No subsites exist yet
+		}
 	}
 
 	function onBeforeWrite() {
-		if((!is_numeric($this->owner->ID) || !$this->owner->ID)) {
-			try {
-				$this->owner->SubsiteID = Subsite::currentSubsiteID();
-			} catch(UnexpectedValueException $e) {
-				// No default subsite, create one
-				$subsite = new Subsite(array(
-					'Title' => 'First Subsite',
-				));
-				$subsite->write();
-				$this->owner->SubsiteID = $subsite->ID;
-			}
+		if((!is_numeric($this->owner->ID) || !$this->owner->ID) && Subsite::currentSubsiteID()) {
+			$this->owner->SubsiteID = Subsite::currentSubsiteID();
 		}
 	}
 
@@ -51,7 +45,11 @@ class SiteConfigSubsites extends DataExtension {
 	 * Return a piece of text to keep DataObject cache keys appropriately specific
 	 */
 	function cacheKeyComponent() {
-		return 'subsite-'.Subsite::currentSubsiteID();
+		try {
+			return 'subsite-'.Subsite::currentSubsiteID();
+		} catch(UnexpectedValueException $e) {
+			return 'subsite-none';
+		}
 	}
 
 	function updateCMSFields(FieldList $fields) {

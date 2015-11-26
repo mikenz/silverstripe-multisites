@@ -64,7 +64,7 @@ class SubsitesVirtualPageTest extends BaseSubsiteTest {
 		$svp = new SubsitesVirtualPage();
 		$svp->CopyContentFromID = $page->ID;
 		$svp->write();
-		$svp->doPublish();
+		$this->assertTrue($svp->doPublish());
 
 		// Rename the file
 		$file = $this->objFromFixture('File', 'file1');
@@ -73,43 +73,57 @@ class SubsitesVirtualPageTest extends BaseSubsiteTest {
 
 		// Verify that the draft and publish virtual pages both have the corrected link
 		$this->assertContains('<img src="/assets/SubsitesVirtualPageTest/464dedb70a/renamed-test-file.pdf"',
+			DB::query("SELECT \"Content\" FROM \"SiteTree\" WHERE \"ID\" = $page->ID")->value());
+		$this->assertContains('<img src="/assets/SubsitesVirtualPageTest/464dedb70a/renamed-test-file.pdf"',
+			DB::query("SELECT \"Content\" FROM \"SiteTree_Live\" WHERE \"ID\" = $page->ID")->value());
+		$this->assertContains('<img src="/assets/SubsitesVirtualPageTest/464dedb70a/renamed-test-file.pdf"',
 			DB::query("SELECT \"Content\" FROM \"SiteTree\" WHERE \"ID\" = $svp->ID")->value());
 		$this->assertContains('<img src="/assets/SubsitesVirtualPageTest/464dedb70a/renamed-test-file.pdf"',
 			DB::query("SELECT \"Content\" FROM \"SiteTree_Live\" WHERE \"ID\" = $svp->ID")->value());
 	}
 
-	function testSubsiteVirtualPagesArentInappropriatelyPublished() {
+	function testSubsiteVirtualPagesArePublishedWhenSourcePublishes() {
 		// Fixture
+		$subsite = $this->objFromFixture('Subsite', 'main');
+		$subsite2 = $this->objFromFixture('Subsite', 'subsite2');
 		$p = new Page();
 		$p->Content = "test content";
+		$p->SubsiteID = $subsite->ID;
 		$p->write();
+
 		$vp = new SubsitesVirtualPage();
+		$vp->SubsiteID = $subsite2->ID;
 		$vp->CopyContentFromID = $p->ID;
 		$vp->write();
 
 		// VP is oragne
 		$this->assertTrue($vp->IsAddedToStage);
+		$this->assertFalse($vp->ExistsOnLive);
+		$this->assertTrue($vp->IsModifiedOnStage);
 
-		// VP is still orange after we publish
-		$p->doPublish();
+		// VP is also published after we publish
+		$this->assertTrue($p->doPublish());
 		$this->fixVersionNumberCache($vp);
-		$this->assertTrue($vp->IsAddedToStage);
+		$this->assertTrue($vp->ExistsOnLive);
 
 		// A new VP created after P's initial construction
 		$vp2 = new SubsitesVirtualPage();
 		$vp2->CopyContentFromID = $p->ID;
 		$vp2->write();
 		$this->assertTrue($vp2->IsAddedToStage);
+		$this->assertFalse($vp2->ExistsOnLive);
+		$this->assertTrue($vp2->IsModifiedOnStage);
 
-		// Also remains orange after a republish
+		// Also also publishes after a republish
 		$p->Content = "new content";
 		$p->write();
-		$p->doPublish();
+		$this->assertTrue($p->doPublish());
 		$this->fixVersionNumberCache($vp2);
-		$this->assertTrue($vp2->IsAddedToStage);
+		$this->assertTrue($vp->ExistsOnLive);
+		$this->assertFalse($vp->IsModifiedOnStage);
 
 		// VP is now published
-		$vp->doPublish();
+		$this->assertTrue($vp->doPublish());
 
 		$this->fixVersionNumberCache($vp);
 		$this->assertTrue($vp->ExistsOnLive);
@@ -124,7 +138,7 @@ class SubsitesVirtualPageTest extends BaseSubsiteTest {
 		$this->assertTrue($vp->IsModifiedOnStage);
 
 		// Publish, VP goes black
-		$p->doPublish();
+		$this->assertTrue($p->doPublish());
 		$this->fixVersionNumberCache($vp);
 		$this->assertTrue($vp->ExistsOnLive);
 		$this->assertFalse($vp->IsModifiedOnStage);
@@ -189,14 +203,14 @@ class SubsitesVirtualPageTest extends BaseSubsiteTest {
 		$vp1 = new SubsitesVirtualPage();
 		$vp1->CopyContentFromID = $page->ID;
 		$vp1->write();
-		$vp1->doPublish();
+		$this->assertTrue($vp1->doPublish());
 
 		$subsite = $this->objFromFixture('Subsite', 'subsite2');
 		Subsite::changeSubsite($subsite->ID);
 		$vp2 = new SubsitesVirtualPage();
 		$vp2->CopyContentFromID = $page->ID;
 		$vp2->write();
-		$vp2->doPublish();
+		$this->assertTrue($vp2->doPublish());
 
 		// Switch back to main site, unpublish source
 		$subsite = $this->objFromFixture('Subsite', 'main');

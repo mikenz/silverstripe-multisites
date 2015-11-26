@@ -149,7 +149,6 @@ class SiteTreeSubsitesTest extends BaseSubsiteTest {
 		$this->assertArrayHasKey('SiteTreeSubsitesTest_ClassB',
 			$settingsFields
 		);
-
 		Subsite::changeSubsite($s2);
 		$settingsFields = $page->getSettingsFields()->dataFieldByName('ClassName')->getSource();
 		$this->assertArrayHasKey('ErrorPage',
@@ -174,14 +173,12 @@ class SiteTreeSubsitesTest extends BaseSubsiteTest {
 
 		$s1->PageTypeBlacklist = 'SiteTreeSubsitesTest_ClassA,ErrorPage';
 		$s1->write();
-
 		Subsite::changeSubsite($s1);
 		$hints = Convert::json2array($cmsmain->SiteTreeHints());
 		$classes = $hints['Root']['disallowedChildren'];
 		$this->assertContains('ErrorPage', $classes);
 		$this->assertContains('SiteTreeSubsitesTest_ClassA', $classes);
 		$this->assertNotContains('SiteTreeSubsitesTest_ClassB', $classes);
-
 		Subsite::changeSubsite($s2);
 		$hints = Convert::json2array($cmsmain->SiteTreeHints());
 		$classes = $hints['Root']['disallowedChildren'];
@@ -193,11 +190,8 @@ class SiteTreeSubsitesTest extends BaseSubsiteTest {
 }
 
 class SiteTreeSubsitesTest_ClassA extends SiteTree implements TestOnly {}
-
 class SiteTreeSubsitesTest_ClassB extends SiteTree implements TestOnly {}
-
 class SiteTreeSubsitesTest_ErrorPage extends ErrorPage implements TestOnly {
-
 	/**
 	 * Helper method to call protected members
 	 *

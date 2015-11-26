@@ -44,7 +44,9 @@ class SiteTreeSubsites extends DataExtension {
 	}
 
 	function onBeforeWrite() {
-		if(!$this->owner->ID && !$this->owner->SubsiteID) $this->owner->SubsiteID = Subsite::currentSubsiteID(true);
+		if(!$this->owner->ID && !$this->owner->SubsiteID && Subsite::currentSubsiteID()) {
+			$this->owner->SubsiteID = Subsite::currentSubsiteID();
+		}
 
 		parent::onBeforeWrite();
 	}

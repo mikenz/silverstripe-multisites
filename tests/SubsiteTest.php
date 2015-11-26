@@ -93,14 +93,8 @@ class SubsiteTest extends BaseSubsiteTest {
 			'Full match, doesn\'t complain about multiple matches within a single subsite'
 		);
 
-		$failed = false;
-		try {
-			Subsite::getSubsiteIDForDomain('subdomain.onmultiplesubsites.com');
-		} catch(UnexpectedValueException $e) {
-			$failed = true;
-		}
-		$this->assertTrue(
-			$failed,
+		$this->assertFalse(
+			Subsite::getSubsiteIDForDomain('subdomain.onmultiplesubsites.com'),
 			'Fails on multiple matches with wildcard vs. www across multiple subsites'
 		);
 
@@ -122,14 +116,8 @@ class SubsiteTest extends BaseSubsiteTest {
 			'Fuzzy match prefixed with wildcard (rule "*.mysite.com")'
 		);
 
-		$failed = false;
-		try {
-			Subsite::getSubsiteIDForDomain('unknown.madeup.com');
-		} catch(UnexpectedValueException $e) {
-			$failed = true;
-		}
-		$this->assertTrue(
-			$failed,
+		$this->assertFalse(
+			Subsite::getSubsiteIDForDomain('unknown.madeup.com'),
 			"Doesn't match unknown subsite"
 		);
 
@@ -172,14 +160,8 @@ class SubsiteTest extends BaseSubsiteTest {
 			'Fuzzy matches without strict checking with www prefix'
 		);
 
-		$failed = false;
-		try {
-			Subsite::getSubsiteIDForDomain('www.wildcard.com');
-		} catch(UnexpectedValueException $e) {
-			$failed = true;
-		}
-		$this->assertTrue(
-			$failed,
+		$this->assertFalse(
+			Subsite::getSubsiteIDForDomain('www.wildcard.com'),
 			'Doesn\'t match www prefix without strict check, even if a wildcard subdomain is in place'
 		);
 
@@ -200,35 +182,16 @@ class SubsiteTest extends BaseSubsiteTest {
 			Subsite::getSubsiteIDForDomain('test.www.example.org'),
 			'Exact matches without strict checking when using www section'
 		);
-
-		$failed = false;
-		try {
-			Subsite::getSubsiteIDForDomain('test.example.org');
-		} catch(UnexpectedValueException $e) {
-			$failed = true;
-		}
-		$this->assertTrue(
-			$failed,
+		$this->assertFalse(
+			Subsite::getSubsiteIDForDomain('test.example.org'),
 			'Doesn\'t fuzzy with strict checking when not using www section'
 		);
-		$failed = false;
-		try {
-			Subsite::getSubsiteIDForDomain('www.example.com');
-		} catch(UnexpectedValueException $e) {
-			$failed = true;
-		}
-		$this->assertTrue(
-			$failed,
+		$this->assertFalse(
+			Subsite::getSubsiteIDForDomain('www.example.com'),
 			'Doesn\'t fuzzy match with strict checking when using www prefix'
 		);
-		$failed = false;
-		try {
-			Subsite::getSubsiteIDForDomain('www.wildcard.com');
-		} catch(UnexpectedValueException $e) {
-			$failed = true;
-		}
-		$this->assertTrue(
-			$failed,
+		$this->assertFalse(
+			Subsite::getSubsiteIDForDomain('www.wildcard.com'),
 			'Fails on multiple matches with strict checking and wildcard vs. www'
 		);
 
@@ -382,7 +345,7 @@ class SubsiteTest extends BaseSubsiteTest {
 		$page1 = new Page();
 		$page1->Title = 'MyAwesomePage';
 		$page1->write();
-		$page1->doPublish();
+		$this->assertTrue($page1->doPublish());
 		$this->assertEquals($page1->SubsiteID, $subsite1->ID);
 
 		// duplicate
@@ -392,7 +355,7 @@ class SubsiteTest extends BaseSubsiteTest {
 		$page2 = DataObject::get_one('Page', "\"Title\" = 'MyAwesomePage'");
 		$page2->Title = 'MyNewAwesomePage';
 		$page2->write();
-		$page2->doPublish();
+		$this->assertTrue($page2->doPublish());
 
 		// check change & check change has not affected subiste1
 		$subsite1->activate();

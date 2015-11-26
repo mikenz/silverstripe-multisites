@@ -18,6 +18,7 @@ class GroupSubsitesTest extends BaseSubsiteTest {
 		$this->assertEquals($group->getTreeTitle(), 'The A Team <i>(global group)</i>');
 		$group->AccessAllSubsites = false;
 		$group->write();
+		$group->Subsites()->add($this->objFromFixture('Subsite', 'main'));
 		$group->Subsites()->add($this->objFromFixture('Subsite', 'domaintest1'));
 		$group->Subsites()->add($this->objFromFixture('Subsite', 'domaintest2'));
 		$this->assertEquals($group->getTreeTitle(), 'The A Team <i>(Template, Test 1, Test 2)</i>');

@@ -44,9 +44,6 @@ SubsiteDomain:
     Domain: four.www.mysite.com
     IsPrimary: 1
 Page:
-  mainSubsitePage:
-    Title: 'MainSubsitePage'
-    SubsiteID: 0
   home:
     Title: 'Home'
     SubsiteID: =>Subsite.main
