@@ -196,6 +196,7 @@ class SubsitesVirtualPageTest extends BaseSubsiteTest {
 		$subsite = $this->objFromFixture('Subsite', 'main');
 		Subsite::changeSubsite($subsite->ID);
 		$page = $this->objFromFixture('Page', 'importantpage');
+		$this->assertTrue($page->doPublish());
 
 		// Create two SVPs on other subsites
 		$subsite = $this->objFromFixture('Subsite', 'subsite1');
@@ -216,7 +217,7 @@ class SubsitesVirtualPageTest extends BaseSubsiteTest {
 		$subsite = $this->objFromFixture('Subsite', 'main');
 		Subsite::changeSubsite($subsite->ID);
 		$page = $this->objFromFixture('Page', 'importantpage');
-		$page->doUnpublish();
+		$this->assertTrue($page->doUnpublish());
 
 		Subsite::changeSubsite($vp1->SubsiteID);
 		$onLive = Versioned::get_one_by_stage('SubsitesVirtualPage', 'Live', "\"SiteTree_Live\".\"ID\" = ".$vp1->ID);
