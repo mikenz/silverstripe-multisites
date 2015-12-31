@@ -3,292 +3,335 @@
 /**
  * Extension for the SiteTree object to add subsites support
  */
-class SiteTreeSubsites extends DataExtension {
+class SiteTreeSubsites extends DataExtension
+{
 
-	private static $has_one = array(
-		'Subsite' => 'Subsite', // The subsite that this page belongs to
-	);
+    private static $has_one = array(
+        'Subsite' => 'Subsite', // The subsite that this page belongs to
+    );
 
-	private static $many_many = array(
-		'CrossSubsiteLinkTracking' => 'SiteTree' // Stored separately, as the logic for URL rewriting is different
-	);
+    private static $many_many = array(
+        'CrossSubsiteLinkTracking' => 'SiteTree' // Stored separately, as the logic for URL rewriting is different
+    );
 
-	private static $many_many_extraFields = array(
-		"CrossSubsiteLinkTracking" => array("FieldName" => "Varchar")
-	);
+    private static $many_many_extraFields = array(
+        "CrossSubsiteLinkTracking" => array("FieldName" => "Varchar")
+    );
 
-	/**
-	 * Update any requests to limit the results to the current site
-	 */
-	public function augmentSQL(SQLSelect $query, DataQuery $dataQuery = null) {
-		if(Subsite::$disable_subsite_filter) return;
-		if($dataQuery->getQueryParam('Subsite.filter') === false) return;
+    /**
+     * Update any requests to limit the results to the current site
+     */
+    public function augmentSQL(SQLSelect $query, DataQuery $dataQuery = null)
+    {
+        if (Subsite::$disable_subsite_filter) {
+            return;
+        }
+        if ($dataQuery->getQueryParam('Subsite.filter') === false) {
+            return;
+        }
 
-		// If you're querying by ID, ignore the sub-site - this is a bit ugly...
-		// if(!$query->where || (strpos($query->where[0], ".\"ID\" = ") === false && strpos($query->where[0], ".`ID` = ") === false && strpos($query->where[0], ".ID = ") === false && strpos($query->where[0], "ID = ") !== 0)) {
-		if($query->filtersOnID()) return;
+        // If you're querying by ID, ignore the sub-site - this is a bit ugly...
+        // if(!$query->where || (strpos($query->where[0], ".\"ID\" = ") === false && strpos($query->where[0], ".`ID` = ") === false && strpos($query->where[0], ".ID = ") === false && strpos($query->where[0], "ID = ") !== 0)) {
+        if ($query->filtersOnID()) {
+            return;
+        }
 
-		if (Subsite::$force_subsite) $subsiteID = Subsite::$force_subsite;
-		else {
-			/*if($context = DataObject::context_obj()) $subsiteID = (int)$context->SubsiteID;
-			else */$subsiteID = (int)Subsite::currentSubsiteID();
-		}
+        if (Subsite::$force_subsite) {
+            $subsiteID = Subsite::$force_subsite;
+        } else {
+            /*if($context = DataObject::context_obj()) $subsiteID = (int)$context->SubsiteID;
+            else */$subsiteID = (int)Subsite::currentSubsiteID();
+        }
 
-		// The foreach is an ugly way of getting the first key :-)
-		foreach($query->getFrom() as $tableName => $info) {
-			// The tableName should be SiteTree or SiteTree_Live...
-			if(strpos($tableName,'SiteTree') === false) break;
-			$query->addWhere("\"$tableName\".\"SubsiteID\" IN ($subsiteID)");
-			break;
-		}
-	}
+        // The foreach is an ugly way of getting the first key :-)
+        foreach ($query->getFrom() as $tableName => $info) {
+            // The tableName should be SiteTree or SiteTree_Live...
+            if (strpos($tableName, 'SiteTree') === false) {
+                break;
+            }
+            $query->addWhere("\"$tableName\".\"SubsiteID\" IN ($subsiteID)");
+            break;
+        }
+    }
 
-	function onBeforeWrite() {
-		if(!$this->owner->ID && !$this->owner->SubsiteID && Subsite::currentSubsiteID()) {
-			$this->owner->SubsiteID = Subsite::currentSubsiteID();
-		}
+    public function onBeforeWrite()
+    {
+        if (!$this->owner->ID && !$this->owner->SubsiteID && Subsite::currentSubsiteID()) {
+            $this->owner->SubsiteID = Subsite::currentSubsiteID();
+        }
 
-		parent::onBeforeWrite();
-	}
+        parent::onBeforeWrite();
+    }
 
-	function updateCMSFields(FieldList $fields) {
-		$subsites = Subsite::accessible_sites("CMS_ACCESS_CMSMain");
-		$subsitesMap = array();
-		if($subsites && $subsites->Count()) {
-			$subsitesMap = $subsites->map('ID', 'Title');
-			unset($subsitesMap[$this->owner->SubsiteID]);
-		}
+    public function updateCMSFields(FieldList $fields)
+    {
+        $subsites = Subsite::accessible_sites("CMS_ACCESS_CMSMain");
+        $subsitesMap = array();
+        if ($subsites && $subsites->Count()) {
+            $subsitesMap = $subsites->map('ID', 'Title');
+            unset($subsitesMap[$this->owner->SubsiteID]);
+        }
 
-		if($subsites->Count() > 1 && $subsitesMap) {
-			$fields->addFieldToTab(
-				'Root.Main',
-				new DropdownField(
-					"CopyToSubsiteID",
-					_t('SiteTreeSubsites.CopyToSubsite', "Copy page to subsite"),
-					$subsitesMap,
-					''
-				)
-			);
-			$fields->addFieldToTab(
-				'Root.Main',
-				$copyAction = new InlineFormAction(
-					"copytosubsite",
-					_t('SiteTreeSubsites.CopyAction', "Copy")
-				)
-			);
-			$copyAction->includeDefaultJS(false);
-		}
+        if ($subsites->Count() > 1 && $subsitesMap) {
+            $fields->addFieldToTab(
+                'Root.Main',
+                new DropdownField(
+                    "CopyToSubsiteID",
+                    _t('SiteTreeSubsites.CopyToSubsite', "Copy page to subsite"),
+                    $subsitesMap,
+                    ''
+                )
+            );
+            $fields->addFieldToTab(
+                'Root.Main',
+                $copyAction = new InlineFormAction(
+                    "copytosubsite",
+                    _t('SiteTreeSubsites.CopyAction', "Copy")
+                )
+            );
+            $copyAction->includeDefaultJS(false);
+        }
 
-		// replace readonly link prefix
-		$subsite = $this->owner->Subsite();
-		$nested_urls_enabled = Config::inst()->get('SiteTree', 'nested_urls');
-		if($subsite && $subsite->ID) {
-			$baseUrl = Director::protocol() . $subsite->domain() . '/';
-			$baseLink = Controller::join_links (
-				$baseUrl,
-				($nested_urls_enabled && $this->owner->ParentID ? $this->owner->Parent()->RelativeLink(true) : null)
-			);
+        // replace readonly link prefix
+        $subsite = $this->owner->Subsite();
+        $nested_urls_enabled = Config::inst()->get('SiteTree', 'nested_urls');
+        if ($subsite && $subsite->ID) {
+            $baseUrl = Director::protocol() . $subsite->domain() . '/';
+            $baseLink = Controller::join_links(
+                $baseUrl,
+                ($nested_urls_enabled && $this->owner->ParentID ? $this->owner->Parent()->RelativeLink(true) : null)
+            );
 
-			$urlsegment = $fields->dataFieldByName('URLSegment');
-			if ($urlsegment) {
-				$urlsegment->setURLPrefix($baseLink);
-			}
-		}
-	}
+            $urlsegment = $fields->dataFieldByName('URLSegment');
+            if ($urlsegment) {
+                $urlsegment->setURLPrefix($baseLink);
+            }
+        }
+    }
 
-	function alternateSiteConfig() {
-		if(!$this->owner->SubsiteID) return false;
-		$sc = DataObject::get_one('SiteConfig', '"SubsiteID" = ' . $this->owner->SubsiteID);
-		if(!$sc) {
-			$sc = new SiteConfig();
-			$sc->SubsiteID = $this->owner->SubsiteID;
-			$sc->Title = _t('Subsite.SiteConfigTitle','Your Site Name');
-			$sc->Tagline = _t('Subsite.SiteConfigSubtitle','Your tagline here');
-			$sc->write();
-		}
-		return $sc;
-	}
+    public function alternateSiteConfig()
+    {
+        if (!$this->owner->SubsiteID) {
+            return false;
+        }
+        $sc = DataObject::get_one('SiteConfig', '"SubsiteID" = ' . $this->owner->SubsiteID);
+        if (!$sc) {
+            $sc = new SiteConfig();
+            $sc->SubsiteID = $this->owner->SubsiteID;
+            $sc->Title = _t('Subsite.SiteConfigTitle', 'Your Site Name');
+            $sc->Tagline = _t('Subsite.SiteConfigSubtitle', 'Your tagline here');
+            $sc->write();
+        }
+        return $sc;
+    }
 
-	/**
-	 * Only allow editing of a page if the member satisfies one of the following conditions:
-	 * - Is in a group which has access to the subsite this page belongs to
-	 * - Is in a group with edit permissions on the "main site"
-	 *
-	 * @return boolean
-	 */
-	function canEdit($member = null) {
+    /**
+     * Only allow editing of a page if the member satisfies one of the following conditions:
+     * - Is in a group which has access to the subsite this page belongs to
+     * - Is in a group with edit permissions on the "main site"
+     *
+     * @return boolean
+     */
+    public function canEdit($member = null)
+    {
+        if (!$member) {
+            $member = Member::currentUser();
+        }
 
-		if(!$member) $member = Member::currentUser();
+        // Find the sites that this user has access to
+        $goodSites = Subsite::accessible_sites('CMS_ACCESS_CMSMain', $member)->column('ID');
 
-		// Find the sites that this user has access to
-		$goodSites = Subsite::accessible_sites('CMS_ACCESS_CMSMain',$member)->column('ID');
+        if (!is_null($this->owner->SubsiteID)) {
+            $subsiteID = $this->owner->SubsiteID;
+        } else {
+            // The relationships might not be available during the record creation when using a GridField.
+            // In this case the related objects will have empty fields, and SubsiteID will not be available.
+            //
+            // We do the second best: fetch the likely SubsiteID from the session. The drawback is this might
+            // make it possible to force relations to point to other (forbidden) subsites.
+            $subsiteID = Subsite::currentSubsiteID();
+        }
 
-		if (!is_null($this->owner->SubsiteID)) {
-			$subsiteID = $this->owner->SubsiteID;
-		} else {
-			// The relationships might not be available during the record creation when using a GridField.
-			// In this case the related objects will have empty fields, and SubsiteID will not be available.
-			//
-			// We do the second best: fetch the likely SubsiteID from the session. The drawback is this might
-			// make it possible to force relations to point to other (forbidden) subsites.
-			$subsiteID = Subsite::currentSubsiteID();
-		}
+        // Return true if they have access to this object's site
+        if (!(in_array(0, $goodSites) || in_array($subsiteID, $goodSites))) {
+            return false;
+        }
+    }
 
-		// Return true if they have access to this object's site
-		if(!(in_array(0, $goodSites) || in_array($subsiteID, $goodSites))) return false;
-	}
+    /**
+     * @return boolean
+     */
+    public function canDelete($member = null)
+    {
+        if (!$member && $member !== false) {
+            $member = Member::currentUser();
+        }
 
-	/**
-	 * @return boolean
-	 */
-	function canDelete($member = null) {
-		if(!$member && $member !== FALSE) $member = Member::currentUser();
+        return $this->canEdit($member);
+    }
 
-		return $this->canEdit($member);
-	}
+    /**
+     * @return boolean
+     */
+    public function canAddChildren($member = null)
+    {
+        if (!$member && $member !== false) {
+            $member = Member::currentUser();
+        }
 
-	/**
-	 * @return boolean
-	 */
-	function canAddChildren($member = null) {
-		if(!$member && $member !== FALSE) $member = Member::currentUser();
+        return $this->canEdit($member);
+    }
 
-		return $this->canEdit($member);
-	}
+    /**
+     * @return boolean
+     */
+    public function canPublish($member = null)
+    {
+        if (!$member && $member !== false) {
+            $member = Member::currentUser();
+        }
 
-	/**
-	 * @return boolean
-	 */
-	function canPublish($member = null) {
-		if(!$member && $member !== FALSE) $member = Member::currentUser();
+        return $this->canEdit($member);
+    }
 
-		return $this->canEdit($member);
-	}
+    /**
+     * Create a duplicate of this page and save it to another subsite
+     * @param $subsiteID int|Subsite The Subsite to copy to, or its ID
+     */
+    public function duplicateToSubsite($subsiteID = null)
+    {
+        if (is_object($subsiteID)) {
+            $subsite = $subsiteID;
+            $subsiteID = $subsite->ID;
+        } else {
+            $subsite = DataObject::get_by_id('Subsite', $subsiteID);
+        }
 
-	/**
-	 * Create a duplicate of this page and save it to another subsite
-	 * @param $subsiteID int|Subsite The Subsite to copy to, or its ID
-	 */
-	public function duplicateToSubsite($subsiteID = null) {
-		if(is_object($subsiteID)) {
-			$subsite = $subsiteID;
-			$subsiteID = $subsite->ID;
-		} else $subsite = DataObject::get_by_id('Subsite', $subsiteID);
+        $oldSubsite=Subsite::currentSubsiteID();
+        if ($subsiteID) {
+            Subsite::changeSubsite($subsiteID);
+        } else {
+            $subsiteID=$oldSubsite;
+        }
 
-		$oldSubsite=Subsite::currentSubsiteID();
-		if($subsiteID) {
-			Subsite::changeSubsite($subsiteID);
-		}else {
-			$subsiteID=$oldSubsite;
-		}
+        $page = $this->owner->duplicate(false);
 
-		$page = $this->owner->duplicate(false);
+        $page->CheckedPublicationDifferences = $page->AddedToStage = true;
+        $subsiteID = ($subsiteID ? $subsiteID : $oldSubsite);
+        $page->SubsiteID = $subsiteID;
 
-		$page->CheckedPublicationDifferences = $page->AddedToStage = true;
-		$subsiteID = ($subsiteID ? $subsiteID : $oldSubsite);
-		$page->SubsiteID = $subsiteID;
+        // MasterPageID is here for legacy purposes, to satisfy the subsites_relatedpages module
+        $page->MasterPageID = $this->owner->ID;
+        $page->write();
 
-		// MasterPageID is here for legacy purposes, to satisfy the subsites_relatedpages module
-		$page->MasterPageID = $this->owner->ID;
-		$page->write();
+        Subsite::changeSubsite($oldSubsite);
 
-		Subsite::changeSubsite($oldSubsite);
+        return $page;
+    }
 
-		return $page;
-	}
+    /**
+     * Called by ContentController::init();
+     */
+    public static function contentcontrollerInit($controller)
+    {
+        $subsite = Subsite::currentSubsite();
 
-	/**
-	 * Called by ContentController::init();
-	 */
-	static function contentcontrollerInit($controller) {
-		$subsite = Subsite::currentSubsite();
+        if ($subsite && $subsite->Theme) {
+            Config::inst()->update('SSViewer', 'theme', Subsite::currentSubsite()->Theme);
+        }
+    }
 
-		if($subsite && $subsite->Theme){
-			Config::inst()->update('SSViewer', 'theme', Subsite::currentSubsite()->Theme);
-		}
-	}
+    public function alternateAbsoluteLink()
+    {
+        // Generate the existing absolute URL and replace the domain with the subsite domain.
+        // This helps deal with Link() returning an absolute URL.
+        $url = Director::absoluteURL($this->owner->Link());
+        if ($this->owner->SubsiteID) {
+            $url = preg_replace('/\/\/[^\/]+\//', '//' .  $this->owner->Subsite()->domain() . '/', $url);
+        }
+        return $url;
+    }
 
-	function alternateAbsoluteLink() {
-		// Generate the existing absolute URL and replace the domain with the subsite domain.
-		// This helps deal with Link() returning an absolute URL.
-		$url = Director::absoluteURL($this->owner->Link());
-		if($this->owner->SubsiteID) {
-			$url = preg_replace('/\/\/[^\/]+\//', '//' .  $this->owner->Subsite()->domain() . '/', $url);
-		}
-		return $url;
-	}
+    /**
+     * Use the CMS domain for iframed CMS previews to prevent single-origin violations
+     * and SSL cert problems.
+     */
+    public function alternatePreviewLink($action = null)
+    {
+        $url = Director::absoluteURL($this->owner->Link());
+        if ($this->owner->SubsiteID) {
+            $url = HTTP::setGetVar('SubsiteID', $this->owner->SubsiteID, $url);
+        }
+        return $url;
+    }
 
-	/**
-	 * Use the CMS domain for iframed CMS previews to prevent single-origin violations
-	 * and SSL cert problems.
-	 */
-	function alternatePreviewLink($action = null) {
-		$url = Director::absoluteURL($this->owner->Link());
-		if($this->owner->SubsiteID) {
-			$url = HTTP::setGetVar('SubsiteID', $this->owner->SubsiteID, $url);
-		}
-		return $url;
-	}
+    /**
+     * Inject the subsite ID into the content so it can be used by frontend scripts.
+     */
+    public function MetaTags(&$tags)
+    {
+        if ($this->owner->SubsiteID) {
+            $tags .= "<meta name=\"x-subsite-id\" content=\"" . $this->owner->SubsiteID . "\" />\n";
+        }
 
-	/**
-	 * Inject the subsite ID into the content so it can be used by frontend scripts.
-	 */
-	function MetaTags(&$tags) {
-		if($this->owner->SubsiteID) {
-			$tags .= "<meta name=\"x-subsite-id\" content=\"" . $this->owner->SubsiteID . "\" />\n";
-		}
+        return $tags;
+    }
 
-		return $tags;
-	}
+    public function augmentSyncLinkTracking()
+    {
+        // Set LinkTracking appropriately
+        $links = HTTP::getLinksIn($this->owner->Content);
+        $linkedPages = array();
 
-	function augmentSyncLinkTracking() {
-		// Set LinkTracking appropriately
-		$links = HTTP::getLinksIn($this->owner->Content);
-		$linkedPages = array();
+        if ($links) {
+            foreach ($links as $link) {
+                if (substr($link, 0, strlen('http://')) == 'http://') {
+                    $withoutHttp = substr($link, strlen('http://'));
+                    if (strpos($withoutHttp, '/') && strpos($withoutHttp, '/') < strlen($withoutHttp)) {
+                        $domain = substr($withoutHttp, 0, strpos($withoutHttp, '/'));
+                        $rest = substr($withoutHttp, strpos($withoutHttp, '/') + 1);
 
-		if($links) foreach($links as $link) {
-			if(substr($link, 0, strlen('http://')) == 'http://') {
-				$withoutHttp = substr($link, strlen('http://'));
-				if(strpos($withoutHttp, '/') && strpos($withoutHttp, '/') < strlen($withoutHttp)) {
-					$domain = substr($withoutHttp, 0, strpos($withoutHttp, '/'));
-					$rest = substr($withoutHttp, strpos($withoutHttp, '/') + 1);
+                        $subsiteID = Subsite::getSubsiteIDForDomain($domain);
+                        $origDisableSubsiteFilter = Subsite::$disable_subsite_filter;
+                        Subsite::disable_subsite_filter(true);
+                        $candidatePage = DataObject::get_one("SiteTree", "\"URLSegment\" = '" . Convert::raw2sql(urldecode($rest)) . "' AND \"SubsiteID\" = " . $subsiteID, false);
+                        Subsite::disable_subsite_filter($origDisableSubsiteFilter);
 
-					$subsiteID = Subsite::getSubsiteIDForDomain($domain);
-					$origDisableSubsiteFilter = Subsite::$disable_subsite_filter;
-					Subsite::disable_subsite_filter(true);
-					$candidatePage = DataObject::get_one("SiteTree", "\"URLSegment\" = '" . Convert::raw2sql(urldecode( $rest)) . "' AND \"SubsiteID\" = " . $subsiteID, false);
-					Subsite::disable_subsite_filter($origDisableSubsiteFilter);
+                        if ($candidatePage) {
+                            $linkedPages[] = $candidatePage->ID;
+                        } else {
+                            $this->owner->HasBrokenLink = true;
+                        }
+                    }
+                }
+            }
+        }
 
-					if($candidatePage) {
-						$linkedPages[] = $candidatePage->ID;
-					} else {
-						$this->owner->HasBrokenLink = true;
-					}
-				}
-			}
-		}
+        $this->owner->CrossSubsiteLinkTracking()->setByIDList($linkedPages);
+    }
 
-		$this->owner->CrossSubsiteLinkTracking()->setByIDList($linkedPages);
-	}
+    /**
+     * Return a piece of text to keep DataObject cache keys appropriately specific
+     */
+    public function cacheKeyComponent()
+    {
+        return 'subsite-'.Subsite::currentSubsiteID(true);
+    }
 
-	/**
-	 * Return a piece of text to keep DataObject cache keys appropriately specific
-	 */
-	function cacheKeyComponent() {
-		return 'subsite-'.Subsite::currentSubsiteID(true);
-	}
-
-	/**
-	 * @param Member
-	 * @return boolean|null
-	 */
-	function canCreate($member = null) {
-		// Typically called on a singleton, so we're not using the Subsite() relation
-		$subsite = Subsite::currentSubsite();
-		if($subsite && $subsite->exists() && $subsite->PageTypeBlacklist) {
-			$blacklisted = explode(',', $subsite->PageTypeBlacklist);
-			// All subclasses need to be listed explicitly
-			if(in_array($this->owner->class, $blacklisted)) return false;
-		}
-	}
+    /**
+     * @param Member
+     * @return boolean|null
+     */
+    public function canCreate($member = null)
+    {
+        // Typically called on a singleton, so we're not using the Subsite() relation
+        $subsite = Subsite::currentSubsite();
+        if ($subsite && $subsite->exists() && $subsite->PageTypeBlacklist) {
+            $blacklisted = explode(',', $subsite->PageTypeBlacklist);
+            // All subclasses need to be listed explicitly
+            if (in_array($this->owner->class, $blacklisted)) {
+                return false;
+            }
+        }
+    }
 }
