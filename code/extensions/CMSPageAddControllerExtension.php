@@ -1,8 +1,9 @@
 <?php
-class CMSPageAddControllerExtension extends Extension {
+class CMSPageAddControllerExtension extends Extension
+{
 
-	function updatePageOptions(&$fields) {
-		$fields->push(new HiddenField('SubsiteID', 'SubsiteID', Subsite::currentSubsiteID()));
-	}
-
+    public function updatePageOptions(&$fields)
+    {
+        $fields->push(new HiddenField('SubsiteID', 'SubsiteID', Subsite::currentSubsiteID()));
+    }
 }
