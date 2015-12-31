@@ -5,43 +5,48 @@
  *
  * @package subsites
  */
-class SubsitesTreeDropdownField extends TreeDropdownField {
+class SubsitesTreeDropdownField extends TreeDropdownField
+{
 
-	private static $allowed_actions = array(
-		'tree'
-	);
+    private static $allowed_actions = array(
+        'tree'
+    );
 
-	protected $subsiteID = 0;
+    protected $subsiteID = 0;
 
-	protected $extraClasses = array('SubsitesTreeDropdownField');
+    protected $extraClasses = array('SubsitesTreeDropdownField');
 
-	function Field($properties = array()) {
-		$html = parent::Field($properties);
+    public function Field($properties = array())
+    {
+        $html = parent::Field($properties);
 
-		Requirements::javascript('simplesubsites/javascript/SubsitesTreeDropdownField.js');
+        Requirements::javascript('simplesubsites/javascript/SubsitesTreeDropdownField.js');
 
-		return $html;
-	}
+        return $html;
+    }
 
-	function setSubsiteID($id) {
-		$this->subsiteID = $id;
-	}
+    public function setSubsiteID($id)
+    {
+        $this->subsiteID = $id;
+    }
 
-	function getSubsiteID() {
-		return $this->subsiteID;
-	}
+    public function getSubsiteID()
+    {
+        return $this->subsiteID;
+    }
 
-	function tree(SS_HTTPRequest $request) {
-		$oldSubsiteID = Session::get('SubsiteID');
-		if ($request->getVar($this->name . '_SubsiteID')) {
-			$this->subsiteID = $request->getVar($this->name . '_SubsiteID');
-		}
-		Session::set('SubsiteID', $this->subsiteID);
+    public function tree(SS_HTTPRequest $request)
+    {
+        $oldSubsiteID = Session::get('SubsiteID');
+        if ($request->getVar($this->name . '_SubsiteID')) {
+            $this->subsiteID = $request->getVar($this->name . '_SubsiteID');
+        }
+        Session::set('SubsiteID', $this->subsiteID);
 
-		$results = parent::tree($request);
+        $results = parent::tree($request);
 
-		Session::set('SubsiteID', $oldSubsiteID);
+        Session::set('SubsiteID', $oldSubsiteID);
 
-		return $results;
-	}
+        return $results;
+    }
 }
