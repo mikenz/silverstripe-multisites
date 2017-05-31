@@ -1,8 +1,4 @@
 de:
-  SubsiteAdmin:
-    MENUTITLE: Subsites
-  SubsiteXHRController:
-    MENUTITLE: SubsiteXHRController
   ASSETADMIN:
     SUBSITENOTICE: 'Auf Ordner und Dateien der Hauptseite kann von allen Subsites zugegriffen werden.'
   FileSubsites:
@@ -20,11 +16,10 @@ de:
     SECURITYTABTITLE: Subsites
   LeftAndMainSubsites:
     Saved: 'Gespeichert.'
-  SiteTreeSubsites:
-    CopyAction: Kopieren
-    CopyToSubsite: 'Seite auf Subseite Kopieren'
+  LeftAndMain_Menu:
+    Hello: Hallo
+    LOGOUT: 'Abmelden'
   Subsite:
-    COPYSTRUCTURE: 'Struktur kopieren von:'
     CopyMessage: 'Kopie von {title} erstellt'
     CustomExtraMeta: 'Benutzerdefinierte Meta-Tags'
     CustomMetaDescription: Beschreibung
@@ -33,15 +28,14 @@ de:
     DOMAINSAVEFIRST: 'Domains können erst nach dem ersten Speichern hinzugefügt werden'
     DomainsHeadline: 'Domains für diese Subsite'
     DomainsListTitle: Domains
-    IsPublicHeaderField: 'Aktive Subsite'
-    NOTEMPLATE: 'Kein Template'
     PLURALNAME: Subsites
-    PageTypeBlacklistField: 'Seitentyp verbieten?'
     SINGULARNAME: Subsite
     SiteConfigSubtitle: 'Ihr Websiteslogan'
     SiteConfigTitle: 'Name Ihrer Website'
     TabTitleConfig: Einstellungen
     ValidateTitle: 'Bitte geben Sie einen Titel an'
+  SubsiteAdmin:
+    MENUTITLE: Subsites
   SubsiteDomain:
     DOMAIN: Domain
     IS_PRIMARY: 'Ist primäre Domain'
@@ -49,19 +43,17 @@ de:
     SINGULARNAME: 'Subsite Domain'
   SubsiteReportWrapper:
     ReportDropdown: Seiten
+  SubsiteXHRController:
+    MENUTITLE: SubsiteXHRController
   Subsites:
-    DefaultSiteFieldLabel: 'Standard Seite'
     DomainFieldLabel: Domäne
-    IsPublicFieldLabel: 'Öffentlich zugänglich'
     LanguageFieldLabel: Sprache
     MainSiteTitle: 'Hauptsite'
-    PageTypeBlacklistFieldLabel: 'Ausgeschlossene Seitentypen'
     PrimaryDomainFieldLabel: 'Primäre Domain'
-    RedirectURLFieldLabel: 'Weierleitungs-URL'
-    ThemeFieldLabel: Theme
     TitleFieldLabel: 'Name der Subsite'
   SubsitesVirtualPage:
     DESCRIPTION: 'Zeigt den Inhalt einer anderen Seite von einer anderen Subsite an'
-    PLURALNAME: 'Subsites Virtuelle Seiten'
     SINGULARNAME: 'Subsites Virtuelle Seite'
     SubsiteField: Subsite
+  VirtualPage:
+    EDITCONTENT: 'Klicken Sie hier, um den Inhalt zu bearbeiten'

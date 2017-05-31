@@ -1,12 +1,41 @@
 ---
 Name: subsiteconfig
-After:
- - 'framework/*'
- - 'cms/*'
 ---
-AssetAdmin:
-  treats_subsite_0_as_global: true
-
 SilverStripe\Control\Director:
   rules:
     'SubsiteXHRController': 'SubsiteXHRController'
+SilverStripe\CMS\Model\SiteTree:
+  extensions:
+    - SiteTreeSubsites
+SilverStripe\CMS\Controllers\ContentController:
+  extensions:
+    - ControllerSubsites
+SilverStripe\CMS\Controllers\CMSPageAddController:
+  extensions:
+    - CMSPageAddControllerExtension
+SilverStripe\Admin\LeftAndMain:
+  extensions:
+    - LeftAndMainSubsites
+    - ControllerSubsites
+SilverStripe\Security\Group:
+  extensions:
+    - GroupSubsites
+SilverStripe\SiteConfig\SiteConfig:
+  extensions:
+    - SiteConfigSubsites
+
+SilverStripe\Admin\SecurityAdmin:
+  extensions:
+    - SubsiteMenuExtension
+SilverStripe\CMS\Controllers\CMSMain:
+  extensions:
+    - SubsiteMenuExtension
+SilverStripe\CMS\Controllers\CMSPagesController:
+   extensions:
+    - SubsiteMenuExtension
+SubsiteAdmin:
+   extensions:
+    - SubsiteMenuExtension
+SilverStripe\SiteConfig\SiteConfigLeftAndMain:
+   extensions:
+    - SubsiteMenuExtension

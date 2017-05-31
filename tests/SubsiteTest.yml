@@ -11,6 +11,9 @@ Subsite:
     Title: 'Test 2'
   domaintest3:
     Title: 'Test 3'
+  domaintest4:
+    Title: 'Test 4'
+    Language: 'en_NZ'
 SubsiteDomain:
   subsite1:
     SubsiteID: =>Subsite.subsite1
@@ -36,10 +39,13 @@ SubsiteDomain:
     SubsiteID: =>Subsite.domaintest3
     Domain: 'three.*'
     IsPrimary: 1
-Page:
-  mainSubsitePage:
-    Title: 'MainSubsitePage'
-    SubsiteID: 0
+  dt4a:
+    SubsiteID: =>Subsite.domaintest4
+    Domain: 'four.mysite.com'
+  dt4b:
+    SubsiteID: =>Subsite.domaintest4
+    Domain: www.secondary.com
+SubsiteTest_Page:
   home:
     Title: 'Home'
     SubsiteID: =>Subsite.main
@@ -49,10 +55,6 @@ Page:
   linky:
      Title: 'Linky'
      SubsiteID: =>Subsite.main
-  staff:
-    Title: 'Staff'
-    ParentID: =>Page.about
-    SubsiteID: =>Subsite.main
   contact:
     Title: 'Contact Us'
     SubsiteID: =>Subsite.main
@@ -140,10 +142,13 @@ SilverStripe\Security\Permission:
   accesscmsmain4:
     Code: CMS_ACCESS_CMSMain
     GroupID: =>SilverStripe\Security\Group.allsubsitesauthors
+  editrightsmmain1:
+    Code: SITETREE_EDIT_ALL
+    GroupID: =>SilverStripe\Security\Group.subsite1_group
   securityaccess1:
     Code: CMS_ACCESS_SecurityAdmin
     GroupID: =>SilverStripe\Security\Group.subsite1_group
-  securityaccess2:
+  securityaccess2: 
     Code: CMS_ACCESS_SecurityAdmin
     GroupID: =>SilverStripe\Security\Group.subsite2_group
   adminsubsite1:

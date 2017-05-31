@@ -1,6 +1,19 @@
-# Subsites Module
+# Simple Subsites Module
 
-[![Build Status](https://secure.travis-ci.org/silverstripe/silverstripe-subsites.png?branch=master)](http://travis-ci.org/silverstripe/silverstripe-subsites)
+This is a fork of the [Silverstripe Subsites](https://github.com/silverstripe/silverstripe-subsites) module.
+
+## Differences from Subsites module
+
+ * Remove the concept of a "main" site - all subsites are created equal
+ * Silverstripe 4.0 compatible
+ * Remove subsites option in "Files" that gave the illusion that file would only be available on one domain
+ * Main menu items are available no mater what subsite is selected
+ * Remove 'Enable public access' and 'Default site' features. This should be done before the request gets to
+    Silverstripe (eg by a caching/SSL termination appliance or Webserver config).
+
+This should be a drop in replacement for the silverstripe subsites module except you will lose access to all pages from
+the "main site" unless you do some database hacking.
+
 
 ## Introduction
 
@@ -21,8 +34,8 @@ permissions" will imply that the person will likely be able to escalate his/her 
 
 For user documentation please see:
 
- 1. [Setting up subsites](docs/en/set_up.md)
- 1. [Working with subsites](docs/en/working_with.md)
+ 1. [Setting up subsites](docs/en/userguide/set_up.md)
+ 1. [Working with subsites](docs/en/userguide/working_with.md)
 
 ## Features & limitations
 
@@ -41,12 +54,12 @@ For user documentation please see:
 
  * Each subsite domain name has to be set up on the server first, and DNS records need to be updated as appropriate.
  * A subsite cannot use a different codebase as the main site, they are intrinsically tied
- 	* However, you can remove page types from a subsite when creating the subsite - [see the setup documentation for further details](set_up.md)
+    * However, you can remove page types from a subsite when creating the subsite - [see the setup documentation for further details](docs/en/userhelp/set_up.md)
  * The only code a developer can edit between subsites is the theme
  * The separation between subsites in the CMS needs to be seen as cosmetic, and mostly applicable to the "Pages" and "Files" sections of the CMS.
- * All subsites run in the same process space and data set. Therefore if an outage affects one subsite it will affect all subsites, and if bad code or hardware corrupts one subsite's data, it's very likely that it has corrupted all subsite data. 
- 	* This principle applies to application error, security vulnerabilities and high levels of traffic
- * It is not currently possible to backup or restore the data from a single subsite. 
+ * All subsites run in the same process space and data set. Therefore if an outage affects one subsite it will affect all subsites, and if bad code or hardware corrupts one subsite's data, it's very likely that it has corrupted all subsite data.
+    * This principle applies to application error, security vulnerabilities and high levels of traffic
+ * It is not currently possible to backup or restore the data from a single subsite.
  * It is awkward (but not impossible) to have separate teams of developers working on different subsites - primarily because of the level of collaboration needed. It is more suited to the same group of developers being responsible for all of the subsites.
 
 If more isolation of code, security, or performance is needed, then consider running multiple separate installations (e.g. on separate servers).
@@ -89,62 +102,49 @@ level, rather than a fully tight security model for managing many sites on the s
 
 Once you have created some subsites/domains in your admin, you can check the overall functionality of subsites by
 
-	http://your.primary-domain.com/subsite-metadata-url?SubsiteID=1
+    http://your.primary-domain.com/subsite-metadata-url?SubsiteID=1
 
 In some Browsers the SubsiteID is visible if you hover over the "Edit" link in the search results of Subsite admin.
-
-### Subsite-specific themes
-
-Download a second theme from http://www.silverstripe.com/themes/ and put it in your themes folder.  Open admin/subsites?flush=1 and select one of your subsites from the menu on the bottom-left.  You should see a Theme dropdown in the subsite details, and it should list both your original theme and the new theme.  Select the new theme in the dropdown.  Now, this subsite will use a different theme from the main site.
-
-### Limit available themes for a subsite
-
-Not all themes might be suitable or adapted for all subsites. You can optionally limit usage of themes:
-
-*mysite/_config.php*
-
-	:::php
-	Subsite::set_allowed_themes(array('blackcandy','mytheme'));
 
 ### Enable Subsite support on DataObjects
 To make your DataObject subsite aware, include a SubsiteID on your DataObject. eg:
 
 *MyDataObject.php*
 
-	:::php
-	private static $has_one = array(
-		'Subsite' => 'Subsite'
-	);
+    :::php
+    private static $has_one = array(
+        'Subsite' => 'Subsite'
+    );
 
 Include the current SubsiteID as a hidden field on getCMSFields, or updateCMSFields. eg:
 
 *MyDataObject.php*
 
-	:::php
-	public function getCMSFields() {
-		$fields = parent::getCMSFields();
-		if(class_exists('Subsite')){
-			$fields->push(new HiddenField('SubsiteID','SubsiteID', Subsite::currentSubsiteID()));
-		}
-		return $fields;
-	}
+    :::php
+    public function getCMSFields() {
+        $fields = parent::getCMSFields();
+        if(class_exists('Subsite')){
+            $fields->push(new HiddenField('SubsiteID','SubsiteID', Subsite::currentSubsiteID()));
+        }
+        return $fields;
+    }
 
 To limit your admin gridfields to the current Subsite records, you can do something like this:
 
 *MyAdmin.php*
 
-	:::php
-	public function getEditForm($id = null, $fields = null){
-		$form = parent::getEditForm($id, $fields);
-		
-		$gridField = $form->Fields()->fieldByName($this->sanitiseClassName($this->modelClass));
-		if(class_exists('Subsite')){
-			$list = $gridField->getList()->filter(array('SubsiteID'=>Subsite::currentSubsiteID()));
-			$gridField->setList($list);
-		}
+    :::php
+    public function getEditForm($id = null, $fields = null){
+        $form = parent::getEditForm($id, $fields);
 
-		return $form;
-	}
+        $gridField = $form->Fields()->fieldByName($this->sanitiseClassName($this->modelClass));
+        if(class_exists('Subsite')){
+            $list = $gridField->getList()->filter(array('SubsiteID'=>Subsite::currentSubsiteID()));
+            $gridField->setList($list);
+        }
+
+        return $form;
+    }
 
 ### Enable menu support for custom areas in subsites
 
@@ -152,39 +152,27 @@ Custom admin areas, by default, will not show in the menu of a subsite. Not all 
 
 *mysite/_config.php*
 
-	:::php
-	MyAdmin::add_extension('SubsiteMenuExtension');
+    :::php
+    MyAdmin::add_extension('SubsiteMenuExtension');
 
 or by defining the subsiteCMSShowInMenu function in your admin:
 
 *MyAdmin.php*
 
-	:::php
-	public function subsiteCMSShowInMenu(){
-		return true;
-	}
+    :::php
+    public function subsiteCMSShowInMenu(){
+        return true;
+    }
 
 
 ### Public display of a subsite
-
-By default, each subsite is available to the public (= not logged-in),
-provided a correct host mapping is set up. A subsite can be marked as non-public
-in its settings, in which case it only shows if a user with CMS permissions is logged in.
-This is useful to create and check subsites on a live system before publishing them.
-
-Please note that you need to filter for this manually in your own queries:
-
-	$publicSubsites = DataObject::get(
-		'Subsite',
-		Subsite::$check_is_public ? '"IsPublic"=1' : '';
-	);
 
 To ensure the logged-in status of a member is carried across to subdomains,
 you also need to configure PHP session cookies to be set
 for all subdomains:
 
-	// Example matching subsite1.example.org and www.example.org
-	Session::set_cookie_domain('.example.org');
+    // Example matching subsite1.example.org and www.example.org
+    Session::set_cookie_domain('.example.org');
 
 ## Screenshots
 

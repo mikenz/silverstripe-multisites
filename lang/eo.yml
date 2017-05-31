@@ -1,8 +1,4 @@
 eo:
-  SubsiteAdmin:
-    MENUTITLE: Subretejoj
-  SubsiteXHRController:
-    MENUTITLE: SubsiteXHRController
   ASSETADMIN:
     SUBSITENOTICE: 'Dosierujoj kaj dosieroj kreitaj en la ĉefa retejo estas alireblaj de ĉiuj retejoj'
   FileSubsites:
@@ -20,11 +16,10 @@ eo:
     SECURITYTABTITLE: Subsites
   LeftAndMainSubsites:
     Saved: 'Konservita, bonvole ĝisdatigi rilatajn paĝojn.'
-  SiteTreeSubsites:
-    CopyAction: Kopio
-    CopyToSubsite: 'Kopii paĝon al subretejo'
+  LeftAndMain_Menu:
+    Hello: Saluton
+    LOGOUT: 'Elsaluti'
   Subsite:
-    COPYSTRUCTURE: 'Kopii strukturon de:'
     CopyMessage: 'Kreis kopion de {title}'
     CustomExtraMeta: 'Propraj meta-etikedoj'
     CustomMetaDescription: Priskribo
@@ -33,15 +28,14 @@ eo:
     DOMAINSAVEFIRST: 'Vi povas aldoni domajnojn post konservante unuafoje'
     DomainsHeadline: 'Domajnoj por ĉi tiu subretejo'
     DomainsListTitle: Domajnoj
-    IsPublicHeaderField: 'Aktiva subretejo'
-    NOTEMPLATE: 'Mankas ŝablono'
     PLURALNAME: Subretejoj
-    PageTypeBlacklistField: 'Ĉu malpermesu paĝajn tipojn?'
     SINGULARNAME: Subretejo
     SiteConfigSubtitle: 'Jen via slogano'
     SiteConfigTitle: 'Nomo de via retejo'
     TabTitleConfig: Agordaro
     ValidateTitle: 'Bonvole aldonu "Titolon"'
+  SubsiteAdmin:
+    MENUTITLE: Subretejoj
   SubsiteDomain:
     DOMAIN: Domajno
     IS_PRIMARY: 'Estas unuaranga domajno'
@@ -49,19 +43,18 @@ eo:
     SINGULARNAME: 'Subreteja domajno'
   SubsiteReportWrapper:
     ReportDropdown: Retejoj
+  SubsiteXHRController:
+    MENUTITLE: SubsiteXHRController
   Subsites:
-    DefaultSiteFieldLabel: 'Apriora retejo'
     DomainFieldLabel: Domajno
-    IsPublicFieldLabel: 'Enŝalti publikan aliron'
     LanguageFieldLabel: Lingvo
     MainSiteTitle: 'Ĉefa retejo'
-    PageTypeBlacklistFieldLabel: 'Paĝtipa nigra listo'
     PrimaryDomainFieldLabel: 'Unuaranga domajno'
-    RedirectURLFieldLabel: 'Redirekti je URL'
-    ThemeFieldLabel: Etoso
     TitleFieldLabel: 'Nomo de subretejo'
   SubsitesVirtualPage:
     DESCRIPTION: 'Vidigas la enhavon de paĝo en alia subretejo'
-    PLURALNAME: 'Virtualaj paĝoj de subretejoj'
+    PLURALNAME: 'Bazaj paĝoj'
     SINGULARNAME: 'Virtuala paĝo de subretejoj'
     SubsiteField: Subretejo
+  VirtualPage:
+    EDITCONTENT: 'Alklaku ĉi tie por redakti la enhavon'

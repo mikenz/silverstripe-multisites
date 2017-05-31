@@ -1,30 +1,37 @@
 <?php
 
 use SilverStripe\Dev\SapphireTest;
-class BaseSubsiteTest extends SapphireTest {
 
-	function setUp() {
-		parent::setUp();
+class BaseSubsiteTest extends SapphireTest
+{
 
-		Subsite::$use_session_subsiteid = true;
-	}
+    public static $fixture_file = 'simplesubsites/tests/BaseSubsiteTest.yml';
 
-	/**
-	 * Avoid subsites filtering on fixture fetching.
-	 */
-	function objFromFixture($class, $id) {
-		Subsite::disable_subsite_filter(true);
-		$obj = parent::objFromFixture($class, $id);
-		Subsite::disable_subsite_filter(false);		
+    public function setUp()
+    {
+        parent::setUp();
 
-		return $obj;
-	}
+        Subsite::disable_subsite_filter(false);
+        Subsite::$use_session_subsiteid = true;
+    }
 
-	/**
-	 * Tests the initial state of disable_subsite_filter
-	 */
-	function testDisableSubsiteFilter() {
-		$this->assertFalse(Subsite::$disable_subsite_filter);
-	}
+    /**
+     * Avoid subsites filtering on fixture fetching.
+     */
+    public function objFromFixture($class, $id)
+    {
+        Subsite::disable_subsite_filter(true);
+        $obj = parent::objFromFixture($class, $id);
+        Subsite::disable_subsite_filter(false);
 
+        return $obj;
+    }
+
+    /**
+     * Tests the initial state of disable_subsite_filter
+     */
+    public function testDisableSubsiteFilter()
+    {
+        $this->assertFalse(Subsite::$disable_subsite_filter);
+    }
 }

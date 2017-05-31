@@ -3,90 +3,90 @@
 use SilverStripe\Admin\LeftAndMain;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Dev\FunctionalTest;
+use SilverStripe\Security\Member;
+use SilverStripe\CMS\Controllers\CMSMain;
+use SilverStripe\AssetAdmin\Controller\AssetAdmin;
+use SilverStripe\Core\Injector\Injector;
 
-class LeftAndMainSubsitesTest extends FunctionalTest {
-	
-	static $fixture_file = 'subsites/tests/SubsiteTest.yml';
+class LeftAndMainSubsitesTest extends FunctionalTest
+{
+    public static $fixture_file = 'simplesubsites/tests/SubsiteTest.yml';
 
-	/**
-	 * Avoid subsites filtering on fixture fetching.
-	 */
-	function objFromFixture($class, $id) {
-		Subsite::disable_subsite_filter(true);
-		$obj = parent::objFromFixture($class, $id);
-		Subsite::disable_subsite_filter(false);
+    public function setUp()
+    {
+        parent::setUp();
+        // parent::setUp disables subsite filter by default to not impact other module's tests
+        Subsite::disable_subsite_filter(false);
+    }
 
-		return $obj;
-	}
+    /**
+     * Avoid subsites filtering on fixture fetching.
+     */
+    public function objFromFixture($class, $id)
+    {
+        Subsite::disable_subsite_filter(true);
+        $obj = parent::objFromFixture($class, $id);
+        Subsite::disable_subsite_filter(false);
 
-	function testSectionSites() {
-		$member = $this->objFromFixture('SilverStripe\\Security\\Member', 'subsite1member');
+        return $obj;
+    }
 
-		$cmsmain = singleton('SilverStripe\\CMS\\Controllers\\CMSMain');
-		$subsites = $cmsmain->sectionSites(true, "Main site", $member);
-		$this->assertDOSEquals(array(
-			array('Title' =>'Subsite1 Template')
-		), $subsites, 'Lists member-accessible sites for the accessible controller.');
+    public function testSectionSites()
+    {
+        $member = $this->objFromFixture(Member::class, 'subsite1member');
 
-		$assetadmin = singleton('AssetAdmin');
-		$subsites = $assetadmin->sectionSites(true, "Main site", $member);
-		$this->assertDOSEquals(array(), $subsites, 'Does not list any sites for forbidden controller.');
+        $cmsmain = Injector::inst()->create(CMSMain::class);
+        $this->assertDOSEquals(
+            [
+                array('Title' =>'Subsite1 Template')
+            ],
+            $cmsmain->sectionSites($member),
+            'Lists member-accessible sites for the accessible controller.'
+        );
 
-		$member = $this->objFromFixture('SilverStripe\\Security\\Member', 'editor');
+        $assetadmin = Injector::inst()->create(AssetAdmin::class);
+        $this->assertDOSEquals(
+            [],
+            $assetadmin->sectionSites($member),
+            'Does not list any sites for forbidden controller.'
+        );
+    }
 
-		$cmsmain = singleton('SilverStripe\\CMS\\Controllers\\CMSMain');
-		$subsites = $cmsmain->sectionSites(true, "Main site", $member);
-		$this->assertDOSContains(array(
-			array('Title' =>'Main site')
-		), $subsites, 'Includes the main site for members who can access all sites.');
-	}
+    public function testAccessChecksDontChangeCurrentSubsite()
+    {
+        $admin = $this->objFromFixture(Member::class, "admin");
+        $this->loginAs($admin);
+        $ids = array();
 
-	function testAccessChecksDontChangeCurrentSubsite() {
-		$admin = $this->objFromFixture("SilverStripe\\Security\\Member","admin");
-		$this->loginAs($admin);
-		$ids = array();
-		
-		$subsite1 = $this->objFromFixture('Subsite', 'domaintest1');
-		$subsite2 = $this->objFromFixture('Subsite', 'domaintest2');
-		$subsite3 = $this->objFromFixture('Subsite', 'domaintest3');
-		
-		$ids[] = $subsite1->ID;
-		$ids[] = $subsite2->ID;
-		$ids[] = $subsite3->ID;
-		$ids[] = 0;
-		
-		// Enable session-based subsite tracking.
-		Subsite::$use_session_subsiteid = true;
+        $subsite1 = $this->objFromFixture('Subsite', 'domaintest1');
+        $subsite2 = $this->objFromFixture('Subsite', 'domaintest2');
+        $subsite3 = $this->objFromFixture('Subsite', 'domaintest3');
 
-		foreach($ids as $id) {
-			Subsite::changeSubsite($id);
-			$this->assertEquals($id, Subsite::currentSubsiteID());
+        $ids[] = $subsite1->ID;
+        $ids[] = $subsite2->ID;
+        $ids[] = $subsite3->ID;
+        $ids[] = 0;
 
-			$left = new LeftAndMain();
-			$this->assertTrue($left->canView(), "Admin user can view subsites LeftAndMain with id = '$id'");
-			$this->assertEquals($id, Subsite::currentSubsiteID(),
-				"The current subsite has not been changed in the process of checking permissions for admin user.");
-		}
-		
-	}
+        // Enable session-based subsite tracking.
+        Subsite::$use_session_subsiteid = true;
 
-	function testShouldChangeSubsite() {
-		$l = new LeftAndMain();
-		Config::inst()->nest();
+        foreach ($ids as $id) {
+            Subsite::changeSubsite($id);
+            $this->assertEquals($id, Subsite::currentSubsiteID());
 
-		Config::inst()->update('SilverStripe\\CMS\\Controllers\\CMSPageEditController', 'treats_subsite_0_as_global', false);
-		$this->assertTrue($l->shouldChangeSubsite('SilverStripe\\CMS\\Controllers\\CMSPageEditController', 0, 5));
-		$this->assertFalse($l->shouldChangeSubsite('SilverStripe\\CMS\\Controllers\\CMSPageEditController', 0, 0));
-		$this->assertTrue($l->shouldChangeSubsite('SilverStripe\\CMS\\Controllers\\CMSPageEditController', 1, 5));
-		$this->assertFalse($l->shouldChangeSubsite('SilverStripe\\CMS\\Controllers\\CMSPageEditController', 1, 1));
+            $left = new LeftAndMain();
+            $this->assertTrue($left->canView(), "Admin user can view subsites LeftAndMain with id = '$id'");
+            $this->assertEquals($id, Subsite::currentSubsiteID(),
+                "The current subsite has not been changed in the process of checking permissions for admin user.");
+        }
+    }
 
-		Config::inst()->update('SilverStripe\\CMS\\Controllers\\CMSPageEditController', 'treats_subsite_0_as_global', true);
-		$this->assertFalse($l->shouldChangeSubsite('SilverStripe\\CMS\\Controllers\\CMSPageEditController', 0, 5));
-		$this->assertFalse($l->shouldChangeSubsite('SilverStripe\\CMS\\Controllers\\CMSPageEditController', 0, 0));
-		$this->assertTrue($l->shouldChangeSubsite('SilverStripe\\CMS\\Controllers\\CMSPageEditController', 1, 5));
-		$this->assertFalse($l->shouldChangeSubsite('SilverStripe\\CMS\\Controllers\\CMSPageEditController', 1, 1));
-
-		Config::inst()->unnest();
-	}
-
+    public function testShouldChangeSubsite()
+    {
+        $l = new LeftAndMain();
+        $this->assertTrue($l->shouldChangeSubsite('SilverStripe\\CMS\\Controllers\\CMSPageEditController', 0, 5));
+        $this->assertFalse($l->shouldChangeSubsite('SilverStripe\\CMS\\Controllers\\CMSPageEditController', 0, 0));
+        $this->assertTrue($l->shouldChangeSubsite('SilverStripe\\CMS\\Controllers\\CMSPageEditController', 1, 5));
+        $this->assertFalse($l->shouldChangeSubsite('SilverStripe\\CMS\\Controllers\\CMSPageEditController', 1, 1));
+    }
 }

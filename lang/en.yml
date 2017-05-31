@@ -1,9 +1,6 @@
 en:
-  ASSETADMIN:
-    SUBSITENOTICE: 'Folders and files created in the main site are accessible by all subsites.'
-  FileSubsites:
-    AllSitesDropdownOpt: 'All sites'
-    SubsiteFieldLabel: Subsite
+  DomainNameField:
+    INVALID_DOMAIN: 'Invalid domain name'
   GridFieldAddFromTemplateButton:
     AddFromTemplate: 'Add New from Template'
   GroupSubsites:
@@ -16,26 +13,16 @@ en:
     SECURITYTABTITLE: Subsites
   LeftAndMainSubsites:
     Saved: 'Saved, please update related pages.'
-  LeftAndMain_Menu:
-    Hello: Hi
-    LOGOUT: 'Log out'
-  SiteTreeSubsites:
-    CopyAction: Copy
-    CopyToSubsite: 'Copy page to subsite'
+  Permissions:
+    PERMISSIONS_CATEGORY: 'Roles and access permissions'
   Subsite:
-    COPYSTRUCTURE: 'Copy structure from:'
-    CopyMessage: 'Created a copy of {title}'
-    CustomExtraMeta: 'Custom Meta Tags'
-    CustomMetaDescription: Description
-    CustomMetaKeywords: Keywords
-    CustomMetaTitle: Title
     DOMAINSAVEFIRST: 'You can only add domains after saving for the first time'
     DomainsHeadline: 'Domains for this subsite'
     DomainsListTitle: Domains
-    IsPublicHeaderField: 'Active subsite'
-    NOTEMPLATE: 'No template'
     PLURALNAME: Subsites
-    PageTypeBlacklistField: 'Disallow page types?'
+    PLURALS:
+      one: 'A Subsite'
+      other: '{count} Subsites'
     SINGULARNAME: Subsite
     SiteConfigSubtitle: 'Your tagline here'
     SiteConfigTitle: 'Your Site Name'
@@ -45,28 +32,20 @@ en:
     MENUTITLE: Subsites
   SubsiteDomain:
     DOMAIN: Domain
-    IS_PRIMARY: 'Is Primary Domain'
+    DOMAIN_DESCRIPTION: 'Hostname of this subsite (exclude protocol). Allows wildcards (*).'
+    IS_PRIMARY: 'Is Primary Domain?'
     PLURALNAME: 'Subsite Domains'
+    PLURALS:
+      one: 'A Subsite Domain'
+      other: '{count} Subsite Domains'
+    PRIMARY_DESCRIPTION: 'Mark this as the default domain for this subsite'
     SINGULARNAME: 'Subsite Domain'
   SubsiteReportWrapper:
     ReportDropdown: Sites
   SubsiteXHRController:
     MENUTITLE: SubsiteXHRController
   Subsites:
-    DefaultSiteFieldLabel: 'Default site'
     DomainFieldLabel: Domain
-    IsPublicFieldLabel: 'Enable public access'
     LanguageFieldLabel: Language
-    MainSiteTitle: 'Main site'
-    PageTypeBlacklistFieldLabel: 'Page Type Blacklist'
     PrimaryDomainFieldLabel: 'Primary Domain'
-    RedirectURLFieldLabel: 'Redirect URL'
-    ThemeFieldLabel: Theme
     TitleFieldLabel: 'Subsite Name'
-  SubsitesVirtualPage:
-    DESCRIPTION: 'Displays the content of a page on another subsite'
-    PLURALNAME: 'Base Pages'
-    SINGULARNAME: 'Subsites Virtual Page'
-    SubsiteField: Subsite
-  VirtualPage:
-    EDITCONTENT: 'Click here to edit the content'
