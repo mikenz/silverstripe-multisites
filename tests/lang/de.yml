@@ -1,0 +1,59 @@
+de:
+  ASSETADMIN:
+    SUBSITENOTICE: 'Auf Ordner und Dateien der Hauptseite kann von allen Subsites zugegriffen werden.'
+  FileSubsites:
+    AllSitesDropdownOpt: 'Alle Subseiten'
+    SubsiteFieldLabel: Subseite
+  GridFieldAddFromTemplateButton:
+    AddFromTemplate: 'Neu hinzufügen von Template'
+  GroupSubsites:
+    ACCESSALL: 'Alle Subsites'
+    ACCESSONLY: 'Nur diese Subsites'
+    ACCESSRADIOTITLE: 'Dieser Gruppe Zugriff geben auf'
+    GlobalGroup: 'globale Gruppe'
+    MANAGE_SUBSITES: 'Subseiten für jede Gruppe bearbeiten'
+    MANAGE_SUBSITES_HELP: 'Möglichkeit, die Berechtigungen einer Gruppe auf bestimmte Subsites zu beschränken.'
+    SECURITYTABTITLE: Subsites
+  LeftAndMainSubsites:
+    Saved: 'Gespeichert.'
+  LeftAndMain_Menu:
+    Hello: Hallo
+    LOGOUT: 'Abmelden'
+  Subsite:
+    CopyMessage: 'Kopie von {title} erstellt'
+    CustomExtraMeta: 'Benutzerdefinierte Meta-Tags'
+    CustomMetaDescription: Beschreibung
+    CustomMetaKeywords: Schlüsselwörter
+    CustomMetaTitle: Titel
+    DOMAINSAVEFIRST: 'Domains können erst nach dem ersten Speichern hinzugefügt werden'
+    DomainsHeadline: 'Domains für diese Subsite'
+    DomainsListTitle: Domains
+    PLURALNAME: Subsites
+    SINGULARNAME: Subsite
+    SiteConfigSubtitle: 'Ihr Websiteslogan'
+    SiteConfigTitle: 'Name Ihrer Website'
+    TabTitleConfig: Einstellungen
+    ValidateTitle: 'Bitte geben Sie einen Titel an'
+  SubsiteAdmin:
+    MENUTITLE: Subsites
+  SubsiteDomain:
+    DOMAIN: Domain
+    IS_PRIMARY: 'Ist primäre Domain'
+    PLURALNAME: 'Subsite Domains'
+    SINGULARNAME: 'Subsite Domain'
+  SubsiteReportWrapper:
+    ReportDropdown: Seiten
+  SubsiteXHRController:
+    MENUTITLE: SubsiteXHRController
+  Subsites:
+    DomainFieldLabel: Domäne
+    LanguageFieldLabel: Sprache
+    MainSiteTitle: 'Hauptsite'
+    PrimaryDomainFieldLabel: 'Primäre Domain'
+    TitleFieldLabel: 'Name der Subsite'
+  SubsitesVirtualPage:
+    DESCRIPTION: 'Zeigt den Inhalt einer anderen Seite von einer anderen Subsite an'
+    SINGULARNAME: 'Subsites Virtuelle Seite'
+    SubsiteField: Subsite
+  VirtualPage:
+    EDITCONTENT: 'Klicken Sie hier, um den Inhalt zu bearbeiten'

@@ -1,24 +1,21 @@
 <?php
 
+namespace AirNZ\SimpleSubsites\Tests;
+
 use SilverStripe\ORM\DataObject;
 use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Control\Director;
 use SilverStripe\Dev\TestOnly;
+use SilverStripe\Security\Member;
+use AirNZ\SimpleSubsites\Model\Subsite;
 
 class SubsiteTest extends BaseSubsiteTest
 {
     public static $fixture_file = 'simplesubsites/tests/SubsiteTest.yml';
 
     /**
-     * Original value of {@see SubSite::$strict_subdomain_matching}
-     *
-     * @var bool
-     */
-    protected $origStrictSubdomainMatching = null;
-
-    /**
-     * Original value of $_REQUEST
+     * Original value of $_SERVER
      *
      * @var array
      */
@@ -32,15 +29,12 @@ class SubsiteTest extends BaseSubsiteTest
         Subsite::disable_subsite_filter(false);
 
         Config::inst()->update(Director::class, 'alternate_base_url', '/');
-        $this->origStrictSubdomainMatching = Subsite::$strict_subdomain_matching;
         $this->origServer = $_SERVER;
-        Subsite::$strict_subdomain_matching = false;
     }
 
     public function tearDown()
     {
         $_SERVER = $this->origServer;
-        Subsite::$strict_subdomain_matching = $this->origStrictSubdomainMatching;
 
         parent::tearDown();
     }
@@ -53,7 +47,7 @@ class SubsiteTest extends BaseSubsiteTest
         Subsite::$write_hostmap = false;
 
         // Create the instance
-        $template = $this->objFromFixture('Subsite', 'main');
+        $template = $this->objFromFixture(Subsite::class, 'main');
 
         // Test that changeSubsite is working
         Subsite::changeSubsite($template->ID);
@@ -87,199 +81,26 @@ class SubsiteTest extends BaseSubsiteTest
      */
     public function testDomainLookup()
     {
-        // Clear existing fixtures
-        foreach (DataObject::get('Subsite') as $subsite) {
-            $subsite->delete();
-        }
-        foreach (DataObject::get('SubsiteDomain') as $domain) {
-            $domain->delete();
-        }
-
-        // Much more expressive than YML in this case
-        $subsite1 = $this->createSubsiteWithDomains(array(
-            'one.example.org' => true,
-            'one.*' => false,
-        ));
-        $subsite2 = $this->createSubsiteWithDomains(array(
-            'two.mysite.com' => true,
-            '*.mysite.com' => false,
-            'subdomain.onmultiplesubsites.com' => false,
-        ));
-        $subsite3 = $this->createSubsiteWithDomains(array(
-            'three.*' => true, // wildcards in primary domain are not recommended
-            'subdomain.unique.com' => false,
-            '*.onmultiplesubsites.com' => false,
-        ));
+        $domaintest1 = $this->objFromFixture(Subsite::class, 'domaintest1');
+        $domaintest2 = $this->objFromFixture(Subsite::class, 'domaintest2');
+        $domaintest4 = $this->objFromFixture(Subsite::class, 'domaintest4');
 
         $this->assertEquals(
-            $subsite3->ID,
-            Subsite::getSubsiteIDForDomain('subdomain.unique.com'),
-            'Full unique match'
-        );
-
-        $this->assertEquals(
-            $subsite1->ID,
-            Subsite::getSubsiteIDForDomain('one.example.org'),
-            'Full match, doesn\'t complain about multiple matches within a single subsite'
-        );
-
-        $this->assertFalse(
-            Subsite::getSubsiteIDForDomain('subdomain.onmultiplesubsites.com'),
-            'Fails on multiple matches with wildcard vs. www across multiple subsites'
-        );
-
-        $this->assertEquals(
-            $subsite1->ID,
-            Subsite::getSubsiteIDForDomain('one.unique.com'),
-            'Fuzzy match suffixed with wildcard (rule "one.*")'
-        );
-
-        $this->assertEquals(
-            $subsite2->ID,
-            Subsite::getSubsiteIDForDomain('two.mysite.com'),
-            'Matches correct subsite for rule'
-        );
-
-        $this->assertEquals(
-            $subsite2->ID,
-            Subsite::getSubsiteIDForDomain('other.mysite.com'),
-            'Fuzzy match prefixed with wildcard (rule "*.mysite.com")'
-        );
-
-        $this->assertFalse(
-            Subsite::getSubsiteIDForDomain('unknown.madeup.com'),
-            "Doesn't match unknown subsite"
-        );
-    }
-
-    public function testStrictSubdomainMatching()
-    {
-        // Clear existing fixtures
-        foreach (DataObject::get('Subsite') as $subsite) {
-            $subsite->delete();
-        }
-        foreach (DataObject::get('SubsiteDomain') as $domain) {
-            $domain->delete();
-        }
-
-        // Much more expressive than YML in this case
-        $subsite1 = $this->createSubsiteWithDomains(array(
-            'example.org' => true,
-            'example.com' => false,
-            '*.wildcard.com' => false,
-        ));
-        $subsite2 = $this->createSubsiteWithDomains(array(
-            'www.example.org' => true,
-            'www.wildcard.com' => false,
-        ));
-        $subsite3 = $this->createSubsiteWithDomains(array(
-            'test.www.example.org' => true,
-        ));
-
-        Subsite::$strict_subdomain_matching = false;
-
-        $this->assertEquals(
-            $subsite1->ID,
-            Subsite::getSubsiteIDForDomain('example.org'),
-            'Exact matches without strict checking when not using www prefix'
+            $domaintest1->ID,
+            Subsite::getSubsiteIDForDomain('one.example.org')
         );
         $this->assertEquals(
-            $subsite1->ID,
-            Subsite::getSubsiteIDForDomain('www.example.org'),
-            'Matches without strict checking when using www prefix, still matching first domain regardless of www prefix  (falling back to subsite primary key ordering)'
+            $domaintest2->ID,
+            Subsite::getSubsiteIDForDomain('two.mysite.com')
         );
         $this->assertEquals(
-            $subsite1->ID,
-            Subsite::getSubsiteIDForDomain('www.example.com'),
-            'Fuzzy matches without strict checking with www prefix'
+            $domaintest4->ID,
+            Subsite::getSubsiteIDForDomain('four.mysite.com')
         );
 
-        $this->assertFalse(
-            Subsite::getSubsiteIDForDomain('www.wildcard.com'),
-            'Doesn\'t match www prefix without strict check, even if a wildcard subdomain is in place'
-        );
-
-        Subsite::$strict_subdomain_matching = true;
-
-        $this->assertEquals(
-            $subsite1->ID,
-            Subsite::getSubsiteIDForDomain('example.org'),
-            'Matches with strict checking when not using www prefix'
-        );
-        $this->assertEquals(
-            $subsite2->ID, // not 1
-            Subsite::getSubsiteIDForDomain('www.example.org'),
-            'Matches with strict checking when using www prefix'
-        );
-        $this->assertEquals(
-            $subsite3->ID,
-            Subsite::getSubsiteIDForDomain('test.www.example.org'),
-            'Exact matches without strict checking when using www section'
-        );
-        $this->assertFalse(
-            Subsite::getSubsiteIDForDomain('test.example.org'),
-            'Doesn\'t fuzzy with strict checking when not using www section'
-        );
-        $this->assertFalse(
-            Subsite::getSubsiteIDForDomain('www.example.com'),
-            'Doesn\'t fuzzy match with strict checking when using www prefix'
-        );
-        $this->assertEquals(
-            $subsite2->ID,
-            Subsite::getSubsiteIDForDomain('www.wildcard.com'),
-            'Ignores the wildcard domain and selects the exact match'
-        );
-    }
-
-    protected function createSubsiteWithDomains($domains)
-    {
-        $subsite = new Subsite(array(
-            'Title' => 'My Subsite'
-        ));
-        $subsite->write();
-        foreach ($domains as $domainStr => $isPrimary) {
-            $domain = new SubsiteDomain(array(
-                'Domain' => $domainStr,
-                'IsPrimary' => $isPrimary,
-                'SubsiteID' => $subsite->ID
-            ));
-            $domain->write();
-        }
-
-        return $subsite;
-    }
-
-    /**
-     * Test the Subsite->domain() method
-     */
-    public function testDefaultDomain()
-    {
-        $this->assertEquals('one.example.org',
-            $this->objFromFixture('Subsite', 'domaintest1')->domain());
-
-        $this->assertEquals('two.mysite.com',
-            $this->objFromFixture('Subsite', 'domaintest2')->domain());
-
-        Subsite::$strict_subdomain_matching = true;
-        $this->assertEquals('four.mysite.com',
-            $this->objFromFixture('Subsite', 'domaintest4')->domain());
-
-        Subsite::$strict_subdomain_matching = false;
-        $this->assertEquals('four.mysite.com',
-            $this->objFromFixture('Subsite', 'domaintest4')->domain());
-
-        $originalHTTPHost = $_SERVER['HTTP_HOST'];
-
-        $_SERVER['HTTP_HOST'] = "www.example.org";
-        $this->assertEquals('three.example.org',
-            $this->objFromFixture('Subsite', 'domaintest3')->domain());
-
-        $_SERVER['HTTP_HOST'] = "mysite.example.org";
-        $this->assertEquals('three.mysite.example.org',
-            $this->objFromFixture('Subsite', 'domaintest3')->domain());
-
-        $this->assertEquals($_SERVER['HTTP_HOST'], singleton('Subsite')->PrimaryDomain);
-        $this->assertEquals('http://'.$_SERVER['HTTP_HOST'].Director::baseURL(), singleton('Subsite')->absoluteBaseURL());
+        $this->assertFalse(Subsite::getSubsiteIDForDomain('*.example.org'));
+        $this->assertFalse(Subsite::getSubsiteIDForDomain('www.example.org'));
+        $this->assertFalse(Subsite::getSubsiteIDForDomain('www.one.example.org'));
     }
 
     public function testAllSites()
@@ -298,9 +119,8 @@ class SubsiteTest extends BaseSubsiteTest
 
     public function testAllAccessibleSites()
     {
-        $member = $this->objFromFixture('SilverStripe\\Security\\Member', 'subsite1member');
-
-        $subsites = Subsite::all_accessible_sites($member);
+        $this->logInAs($this->objFromFixture(Member::class, 'subsite1member'));
+        $subsites = Subsite::all_accessible_sites();
         $this->assertDOSEquals([
             ['Title' =>'Subsite1 Template']
         ], $subsites, 'Lists member-accessible sites.');
@@ -313,7 +133,7 @@ class SubsiteTest extends BaseSubsiteTest
     {
         $member1Sites = Subsite::accessible_sites(
             "CMS_ACCESS_CMSMain",
-            $this->objFromFixture('SilverStripe\\Security\\Member', 'subsite1member')
+            $this->objFromFixture(Member::class, 'subsite1member')
         );
 
         $member1SiteTitles = $member1Sites->column("Title");
@@ -322,7 +142,7 @@ class SubsiteTest extends BaseSubsiteTest
 
         $adminSites = Subsite::accessible_sites(
             "CMS_ACCESS_CMSMain",
-            $this->objFromFixture('SilverStripe\\Security\\Member', 'admin')
+            $this->objFromFixture(Member::class, 'admin')
         );
         $adminSiteTitles = $adminSites->column("Title");
         sort($adminSiteTitles);
@@ -338,8 +158,8 @@ class SubsiteTest extends BaseSubsiteTest
         ], array_values($adminSiteTitles));
 
         $member2Sites = Subsite::accessible_sites(
-            "CMS_ACCESS_CMSMain", false, null,
-            $this->objFromFixture('SilverStripe\\Security\\Member', 'subsite1member2')
+            "CMS_ACCESS_CMSMain",
+            $this->objFromFixture(Member::class, 'subsite1member2')
         );
         $member2SiteTitles = $member2Sites->column("Title");
         sort($member2SiteTitles);
@@ -348,10 +168,10 @@ class SubsiteTest extends BaseSubsiteTest
 
     public function testhasMainSitePermission()
     {
-        $admin = $this->objFromFixture('SilverStripe\\Security\\Member', 'admin');
-        $subsite1member = $this->objFromFixture('SilverStripe\\Security\\Member', 'subsite1member');
-        $subsite1admin = $this->objFromFixture('SilverStripe\\Security\\Member', 'subsite1admin');
-        $allsubsitesauthor = $this->objFromFixture('SilverStripe\\Security\\Member', 'allsubsitesauthor');
+        $admin = $this->objFromFixture(Member::class, 'admin');
+        $subsite1member = $this->objFromFixture(Member::class, 'subsite1member');
+        $subsite1admin = $this->objFromFixture(Member::class, 'subsite1admin');
+        $allsubsitesauthor = $this->objFromFixture(Member::class, 'allsubsitesauthor');
 
         $this->assertTrue(
             Subsite::hasMainSitePermission($admin),
@@ -386,8 +206,4 @@ class SubsiteTest extends BaseSubsiteTest
             'CMS_ACCESS_CMSMain (on main site) denied for subsite1 cms author'
         );
     }
-}
-
-class SubsiteTest_Page extends SiteTree implements TestOnly
-{
 }

@@ -1,6 +1,10 @@
 <?php
 
+namespace AirNZ\SimpleSubsites\Tests;
+
 use SilverStripe\SiteConfig\SiteConfig;
+use AirNZ\SimpleSubsites\Extensions\SiteConfigExtension;
+use AirNZ\SimpleSubsites\Model\Subsite;
 
 class SiteConfigSubsitesTest extends BaseSubsiteTest
 {
@@ -15,10 +19,10 @@ class SiteConfigSubsitesTest extends BaseSubsiteTest
 
     public function testEachSubsiteHasAUniqueSiteConfig()
     {
-        $subsite1 = $this->objFromFixture('Subsite', 'domaintest1');
-        $subsite2 = $this->objFromFixture('Subsite', 'domaintest2');
+        $subsite1 = $this->objFromFixture(Subsite::class, 'domaintest1');
+        $subsite2 = $this->objFromFixture(Subsite::class, 'domaintest2');
 
-        $this->assertTrue(is_array(singleton('SiteConfigSubsites')->extraStatics()));
+        $this->assertTrue(is_array(singleton(SiteConfigExtension::class)->extraStatics()));
 
         Subsite::changeSubsite($subsite1->ID);
         $sc = SiteConfig::current_site_config();

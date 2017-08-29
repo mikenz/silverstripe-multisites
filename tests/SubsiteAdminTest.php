@@ -1,9 +1,12 @@
 <?php
 
+namespace AirNZ\SimpleSubsites\Tests;
+
 use SilverStripe\CMS\Controllers\CMSMain;
 use SilverStripe\Control\Session;
 use SilverStripe\Control\Director;
 use SilverStripe\Security\Member;
+use AirNZ\SimpleSubsites\Model\Subsite;
 
 class SubsiteAdminTest extends BaseSubsiteTest
 {
@@ -18,9 +21,7 @@ class SubsiteAdminTest extends BaseSubsiteTest
 
     public function adminLoggedInSession()
     {
-        return new Session(array(
-            'loggedInAs' => $this->idFromFixture(Member::class, 'admin')
-        ));
+        $this->logInAs($this->idFromFixture(Member::class, 'admin'));
     }
 
     /**
@@ -29,13 +30,13 @@ class SubsiteAdminTest extends BaseSubsiteTest
     public function testBasicView()
     {
         Subsite::$write_hostmap = false;
-        $subsite1ID = $this->objFromFixture('Subsite', 'domaintest1')->ID;
+        $subsite1ID = $this->objFromFixture(Subsite::class, 'domaintest1')->ID;
 
         // Open the admin area logged in as admin
         $response1 = Director::test('admin/subsites/', null, $this->adminLoggedInSession());
 
         // Confirm that this URL gets you the entire page, with the edit form loaded
-        $response2 = Director::test("admin/subsites/Subsite/EditForm/field/Subsite/item/$subsite1ID/edit", null, $this->adminLoggedInSession());
+        $response2 = Director::test("admin/subsites/AirNZ-SimpleSubsites-Model-Subsite/EditForm/field/AirNZ-SimpleSubsites-Model-Subsite/item/$subsite1ID/edit", null, $this->adminLoggedInSession());
         $this->assertTrue(strpos($response2->getBody(), 'id="Form_ItemEditForm_ID"') !== false, "Testing Form_ItemEditForm_ID exists");
         $this->assertTrue(strpos($response2->getBody(), '<head') !== false, "Testing <head> exists");
     }
@@ -48,15 +49,16 @@ class SubsiteAdminTest extends BaseSubsiteTest
     public function testMainsiteAdminCanAccessAllSubsites()
     {
         $member = $this->objFromFixture(Member::class, 'admin');
-        Session::set("loggedInAs", $member->ID);
+        $this->logInAs($member->ID);
 
         $cmsMain = new CMSMain();
-        foreach ($cmsMain->Subsites() as $subsite) {
+        $ids = [];
+        foreach (Subsite::all_accessible_sites() as $subsite) {
             $ids[$subsite->ID] = true;
         }
 
-        $this->assertArrayHasKey($this->idFromFixture('Subsite', 'main'), $ids, "Site with no groups inaccesible");
-        $this->assertArrayHasKey($this->idFromFixture('Subsite', 'subsite1'), $ids, "Subsite1 Template inaccessible");
-        $this->assertArrayHasKey($this->idFromFixture('Subsite', 'subsite2'), $ids, "Subsite2 Template inaccessible");
+        $this->assertArrayHasKey($this->idFromFixture(Subsite::class, 'main'), $ids, "Site with no groups inaccesible");
+        $this->assertArrayHasKey($this->idFromFixture(Subsite::class, 'subsite1'), $ids, "Subsite1 Template inaccessible");
+        $this->assertArrayHasKey($this->idFromFixture(Subsite::class, 'subsite2'), $ids, "Subsite2 Template inaccessible");
     }
 }

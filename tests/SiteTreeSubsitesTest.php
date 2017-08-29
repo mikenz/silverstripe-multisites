@@ -1,18 +1,25 @@
 <?php
 
+namespace AirNZ\SimpleSubsites\Tests;
+
 use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Control\Session;
 use SilverStripe\Dev\TestOnly;
+use AirNZ\SimpleSubsites\Extensions\SiteTreeExtension;
+use AirNZ\SimpleSubsites\Model\Subsite;
+use AirNZ\SimpleSubsites\Tests\SiteTreeSubsitesTest_ClassA;
+use AirNZ\SimpleSubsites\Tests\SiteTreeSubsitesTest_ClassB;
+use AirNZ\SimpleSubsites\Tests\SubsiteTest_Page;
 
 class SiteTreeSubsitesTest extends BaseSubsiteTest
 {
     public static $fixture_file = 'simplesubsites/tests/SubsiteTest.yml';
 
     protected static $extra_dataobjects = [
-        'SiteTreeSubsitesTest_ClassA',
-        'SiteTreeSubsitesTest_ClassB',
+        SiteTreeSubsitesTest_ClassA::class,
+        SiteTreeSubsitesTest_ClassB::class,
     ];
 
     protected static $illegal_extensions = [
@@ -28,8 +35,8 @@ class SiteTreeSubsitesTest extends BaseSubsiteTest
 
     public function testPagesInDifferentSubsitesCanShareURLSegment()
     {
-        $subsite1 = $this->objFromFixture('Subsite', 'subsite1');
-        $subsite2 = $this->objFromFixture('Subsite', 'subsite2');
+        $subsite1 = $this->objFromFixture(Subsite::class, 'subsite1');
+        $subsite2 = $this->objFromFixture(Subsite::class, 'subsite2');
 
         Subsite::changeSubsite($subsite2->ID);
         $pageMain = new SiteTree();
@@ -42,7 +49,9 @@ class SiteTreeSubsitesTest extends BaseSubsiteTest
         $pageMainOther->write();
         $pageMainOther->publish('Stage', 'Live');
 
-        $this->assertNotEquals($pageMain->URLSegment, $pageMainOther->URLSegment,
+        $this->assertNotEquals(
+            $pageMain->URLSegment,
+            $pageMainOther->URLSegment,
             'Pages in same subsite cant share the same URL'
         );
 
@@ -53,7 +62,9 @@ class SiteTreeSubsitesTest extends BaseSubsiteTest
         $pageSubsite1->write();
         $pageSubsite1->publish('Stage', 'Live');
 
-        $this->assertEquals($pageMain->URLSegment, $pageSubsite1->URLSegment,
+        $this->assertEquals(
+            $pageMain->URLSegment,
+            $pageSubsite1->URLSegment,
             'Pages in different subsites can share the same URL'
         );
     }
@@ -63,7 +74,7 @@ class SiteTreeSubsitesTest extends BaseSubsiteTest
         $this->assertTrue(singleton('SilverStripe\\CMS\\Model\\SiteTree')->getSiteConfig() instanceof SiteConfig);
         // The following assert is breaking in Translatable.
         $this->assertTrue(singleton('SilverStripe\\CMS\\Model\\SiteTree')->getCMSFields() instanceof FieldList);
-        $this->assertTrue(is_array(singleton('SiteTreeSubsites')->extraStatics()));
+        $this->assertTrue(is_array(singleton(SiteTreeExtension::class)->extraStatics()));
     }
 
     public function testCanEditSiteTree()
@@ -71,14 +82,14 @@ class SiteTreeSubsitesTest extends BaseSubsiteTest
         $admin = $this->objFromFixture('SilverStripe\\Security\\Member', 'admin');
         $subsite1member = $this->objFromFixture('SilverStripe\\Security\\Member', 'subsite1member');
         $subsite2member = $this->objFromFixture('SilverStripe\\Security\\Member', 'subsite2member');
-        $mainpage = $this->objFromFixture('SubsiteTest_Page', 'home');
-        $subsite1page = $this->objFromFixture('SubsiteTest_Page', 'subsite1_home');
-        $subsite2page = $this->objFromFixture('SubsiteTest_Page', 'subsite2_home');
-        $subsite1 = $this->objFromFixture('Subsite', 'subsite1');
-        $subsite2 = $this->objFromFixture('Subsite', 'subsite2');
+        $mainpage = $this->objFromFixture(SubsiteTest_Page::class, 'home');
+        $subsite1page = $this->objFromFixture(SubsiteTest_Page::class, 'subsite1_home');
+        $subsite2page = $this->objFromFixture(SubsiteTest_Page::class, 'subsite2_home');
+        $subsite1 = $this->objFromFixture(Subsite::class, 'subsite1');
+        $subsite2 = $this->objFromFixture(Subsite::class, 'subsite2');
 
         // Cant pass member as arguments to canEdit() because of GroupSubsites
-        Session::set("loggedInAs", $admin->ID);
+        $this->logInAs($admin->ID);
         $this->assertTrue(
             (bool)$subsite1page->canEdit(),
             'Administrators can edit all subsites'
@@ -87,13 +98,13 @@ class SiteTreeSubsitesTest extends BaseSubsiteTest
         // @todo: Workaround because GroupSubsites->augmentSQL() is relying on session state
         Subsite::changeSubsite($subsite1);
 
-        Session::set("loggedInAs", $subsite1member->ID);
+        $this->logInAs($subsite1member->ID);
         $this->assertTrue(
             (bool)$subsite1page->canEdit(),
             'Members can edit pages on a subsite if they are in a group belonging to this subsite'
         );
 
-        Session::set("loggedInAs", $subsite2member->ID);
+        $this->logInAs($subsite2member->ID);
         $this->assertFalse(
             (bool)$subsite1page->canEdit(),
             'Members cant edit pages on a subsite if they are not in a group belonging to this subsite'
@@ -105,14 +116,14 @@ class SiteTreeSubsitesTest extends BaseSubsiteTest
         $admin = $this->objFromFixture('SilverStripe\\Security\\Member', 'admin');
         $subsite1member = $this->objFromFixture('SilverStripe\\Security\\Member', 'subsite1member');
         $subsite2member = $this->objFromFixture('SilverStripe\\Security\\Member', 'subsite2member');
-        $mainpage = $this->objFromFixture('SubsiteTest_Page', 'home');
-        $subsite1page = $this->objFromFixture('SubsiteTest_Page', 'subsite1_home');
-        $subsite2page = $this->objFromFixture('SubsiteTest_Page', 'subsite2_home');
-        $subsite1 = $this->objFromFixture('Subsite', 'subsite1');
-        $subsite2 = $this->objFromFixture('Subsite', 'subsite2');
+        $mainpage = $this->objFromFixture(SubsiteTest_Page::class, 'home');
+        $subsite1page = $this->objFromFixture(SubsiteTest_Page::class, 'subsite1_home');
+        $subsite2page = $this->objFromFixture(SubsiteTest_Page::class, 'subsite2_home');
+        $subsite1 = $this->objFromFixture(Subsite::class, 'subsite1');
+        $subsite2 = $this->objFromFixture(Subsite::class, 'subsite2');
 
         // Cant pass member as arguments to canEdit() because of GroupSubsites
-        Session::set("loggedInAs", $admin->ID);
+        $this->logInAs($admin->ID);
         $this->assertTrue(
             (bool)$subsite1page->canDelete(),
             'Administrators can delete on all subsites'
@@ -121,13 +132,13 @@ class SiteTreeSubsitesTest extends BaseSubsiteTest
         // @todo: Workaround because GroupSubsites->augmentSQL() is relying on session state
         Subsite::changeSubsite($subsite1);
 
-        Session::set("loggedInAs", $subsite1member->ID);
+        $this->logInAs($subsite1member->ID);
         $this->assertTrue(
             (bool)$subsite1page->canDelete(),
             'Members can delete pages on a subsite if they are in a group belonging to this subsite'
         );
 
-        Session::set("loggedInAs", $subsite2member->ID);
+        $this->logInAs($subsite2member->ID);
         $this->assertFalse(
             (bool)$subsite1page->canDelete(),
             'Members cant delete pages on a subsite if they are not in a group belonging to this subsite'
@@ -139,14 +150,14 @@ class SiteTreeSubsitesTest extends BaseSubsiteTest
         $admin = $this->objFromFixture('SilverStripe\\Security\\Member', 'admin');
         $subsite1member = $this->objFromFixture('SilverStripe\\Security\\Member', 'subsite1member');
         $subsite2member = $this->objFromFixture('SilverStripe\\Security\\Member', 'subsite2member');
-        $mainpage = $this->objFromFixture('SubsiteTest_Page', 'home');
-        $subsite1page = $this->objFromFixture('SubsiteTest_Page', 'subsite1_home');
-        $subsite2page = $this->objFromFixture('SubsiteTest_Page', 'subsite2_home');
-        $subsite1 = $this->objFromFixture('Subsite', 'subsite1');
-        $subsite2 = $this->objFromFixture('Subsite', 'subsite2');
+        $mainpage = $this->objFromFixture(SubsiteTest_Page::class, 'home');
+        $subsite1page = $this->objFromFixture(SubsiteTest_Page::class, 'subsite1_home');
+        $subsite2page = $this->objFromFixture(SubsiteTest_Page::class, 'subsite2_home');
+        $subsite1 = $this->objFromFixture(Subsite::class, 'subsite1');
+        $subsite2 = $this->objFromFixture(Subsite::class, 'subsite2');
 
         // Cant pass member as arguments to canEdit() because of GroupSubsites
-        Session::set("loggedInAs", $admin->ID);
+        $this->logInAs($admin->ID);
         $this->assertTrue(
             (bool)$subsite1page->canAddChildren(),
             'Administrators can add children on all subsites'
@@ -155,13 +166,13 @@ class SiteTreeSubsitesTest extends BaseSubsiteTest
         // @todo: Workaround because GroupSubsites->augmentSQL() is relying on session state
         Subsite::changeSubsite($subsite1);
 
-        Session::set("loggedInAs", $subsite1member->ID);
+        $this->logInAs($subsite1member->ID);
         $this->assertTrue(
             (bool)$subsite1page->canAddChildren(),
             'Members can add children pages on a subsite if they are in a group belonging to this subsite'
         );
 
-        Session::set("loggedInAs", $subsite2member->ID);
+        $this->logInAs($subsite2member->ID);
         $this->assertFalse(
             (bool)$subsite1page->canAddChildren(),
             'Members cant add children pages on a subsite if they are not in a group belonging to this subsite'
@@ -173,13 +184,13 @@ class SiteTreeSubsitesTest extends BaseSubsiteTest
         $admin = $this->objFromFixture('SilverStripe\\Security\\Member', 'admin');
         $subsite1member = $this->objFromFixture('SilverStripe\\Security\\Member', 'subsite1member');
         $subsite2member = $this->objFromFixture('SilverStripe\\Security\\Member', 'subsite2member');
-        $mainpage = $this->objFromFixture('SubsiteTest_Page', 'home');
-        $subsite1page = $this->objFromFixture('SubsiteTest_Page', 'subsite1_home');
-        $subsite2page = $this->objFromFixture('SubsiteTest_Page', 'subsite2_home');
-        $subsite1 = $this->objFromFixture('Subsite', 'subsite1');
-        $subsite2 = $this->objFromFixture('Subsite', 'subsite2');
+        $mainpage = $this->objFromFixture(SubsiteTest_Page::class, 'home');
+        $subsite1page = $this->objFromFixture(SubsiteTest_Page::class, 'subsite1_home');
+        $subsite2page = $this->objFromFixture(SubsiteTest_Page::class, 'subsite2_home');
+        $subsite1 = $this->objFromFixture(Subsite::class, 'subsite1');
+        $subsite2 = $this->objFromFixture(Subsite::class, 'subsite2');
 
-        Session::set("loggedInAs", $admin->ID);
+        $this->logInAs($admin->ID);
         $this->assertTrue(
             (bool)$subsite1page->canPublish(),
             'Administrators can publish on all subsites'
@@ -188,13 +199,13 @@ class SiteTreeSubsitesTest extends BaseSubsiteTest
         // @todo: Workaround because GroupSubsites->augmentSQL() is relying on session state
         Subsite::changeSubsite($subsite1);
 
-        Session::set("loggedInAs", $subsite1member->ID);
+        $this->logInAs($subsite1member->ID);
         $this->assertTrue(
             (bool)$subsite1page->canPublish(),
             'Members can publish pages on a subsite if they are in a group belonging to this subsite'
         );
 
-        Session::set("loggedInAs", $subsite2member->ID);
+        $this->logInAs($subsite2member->ID);
         $this->assertFalse(
             (bool)$subsite1page->canPublish(),
             'Members cant publish pages on a subsite if they are not in a group belonging to this subsite'
@@ -207,8 +218,8 @@ class SiteTreeSubsitesTest extends BaseSubsiteTest
     public function testTwoPagesWithSameURLOnDifferentSubsites()
     {
         // Set up a couple of pages with the same URL on different subsites
-        $s1 = $this->objFromFixture('Subsite', 'domaintest1');
-        $s2 = $this->objFromFixture('Subsite', 'domaintest2');
+        $s1 = $this->objFromFixture(Subsite::class, 'domaintest1');
+        $s2 = $this->objFromFixture(Subsite::class, 'domaintest2');
 
         $p1 = new SiteTree();
         $p1->Title = $p1->URLSegment = "test-page";
@@ -231,12 +242,4 @@ class SiteTreeSubsitesTest extends BaseSubsiteTest
         Subsite::changeSubsite($s2);
         $this->assertEquals($p2->ID, SiteTree::get_by_link('test-page')->ID);
     }
-}
-
-class SiteTreeSubsitesTest_ClassA extends SiteTree implements TestOnly
-{
-}
-
-class SiteTreeSubsitesTest_ClassB extends SiteTree implements TestOnly
-{
 }

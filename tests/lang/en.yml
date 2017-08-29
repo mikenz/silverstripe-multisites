@@ -1,0 +1,51 @@
+en:
+  DomainNameField:
+    INVALID_DOMAIN: 'Invalid domain name'
+  GridFieldAddFromTemplateButton:
+    AddFromTemplate: 'Add New from Template'
+  GroupSubsites:
+    ACCESSALL: 'All subsites'
+    ACCESSONLY: 'Only these subsites'
+    ACCESSRADIOTITLE: 'Give this group access to'
+    GlobalGroup: 'global group'
+    MANAGE_SUBSITES: 'Manage subsites for groups'
+    MANAGE_SUBSITES_HELP: 'Ability to limit the permissions for a group to one or more subsites.'
+    SECURITYTABTITLE: Subsites
+  LeftAndMainSubsites:
+    Saved: 'Saved, please update related pages.'
+  Permissions:
+    PERMISSIONS_CATEGORY: 'Roles and access permissions'
+  Subsite:
+    DOMAINSAVEFIRST: 'You can only add domains after saving for the first time'
+    DomainsHeadline: 'Domains for this subsite'
+    DomainsListTitle: Domains
+    PLURALNAME: Subsites
+    PLURALS:
+      one: 'A Subsite'
+      other: '{count} Subsites'
+    SINGULARNAME: Subsite
+    SiteConfigSubtitle: 'Your tagline here'
+    SiteConfigTitle: 'Your Site Name'
+    TabTitleConfig: Configuration
+    ValidateTitle: 'Please add a "Title"'
+  SubsiteAdmin:
+    MENUTITLE: Subsites
+  SubsiteDomain:
+    DOMAIN: Domain
+    DOMAIN_DESCRIPTION: 'Hostname of this subsite (exclude protocol). Allows wildcards (*).'
+    IS_PRIMARY: 'Is Primary Domain?'
+    PLURALNAME: 'Subsite Domains'
+    PLURALS:
+      one: 'A Subsite Domain'
+      other: '{count} Subsite Domains'
+    PRIMARY_DESCRIPTION: 'Mark this as the default domain for this subsite'
+    SINGULARNAME: 'Subsite Domain'
+  SubsiteReportWrapper:
+    ReportDropdown: Sites
+  SubsiteXHRController:
+    MENUTITLE: SubsiteXHRController
+  Subsites:
+    DomainFieldLabel: Domain
+    LanguageFieldLabel: Language
+    PrimaryDomainFieldLabel: 'Primary Domain'
+    TitleFieldLabel: 'Subsite Name'

@@ -1,9 +1,13 @@
 <?php
 
+namespace AirNZ\SimpleSubsites\Tests;
+
 use SilverStripe\Control\Session;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Dev\FunctionalTest;
 use SilverStripe\Security\Member;
+use AirNZ\SimpleSubsites\Model\Subsite;
+use AirNZ\SimpleSubsites\Tests\SubsiteTest_Page;
 
 class SubsiteAdminFunctionalTest extends FunctionalTest
 {
@@ -41,13 +45,16 @@ class SubsiteAdminFunctionalTest extends FunctionalTest
         $response = $this->getAndFollowAll('admin/pages/?SubsiteID=0');
         $this->assertRegExp('#^Security/login.*#', $this->mainSession->lastUrl(), 'Admin is disallowed');
 
-        $subsite1 = $this->objFromFixture('Subsite', 'subsite1');
+        $subsite1 = $this->objFromFixture(Subsite::class, 'subsite1');
         $response = $this->getAndFollowAll("admin/pages/?SubsiteID={$subsite1->ID}");
         $this->assertRegExp('#^Security/login.*#', $this->mainSession->lastUrl(), 'Admin is disallowed');
 
         $response = $this->getAndFollowAll('SubsiteXHRController');
-        $this->assertRegExp('#^Security/login.*#', $this->mainSession->lastUrl(),
-            'SubsiteXHRController is disallowed');
+        $this->assertRegExp(
+            '#^Security/login.*#',
+            $this->mainSession->lastUrl(),
+            'SubsiteXHRController is disallowed'
+        );
     }
 
     /**
@@ -56,25 +63,28 @@ class SubsiteAdminFunctionalTest extends FunctionalTest
     public function testAdminCanAccessAllSubsites()
     {
         $member = $this->objFromFixture(Member::class, 'admin');
-        Session::set("loggedInAs", $member->ID);
+        $this->logInAs($member->ID);
 
-        $subsite1 = $this->objFromFixture('Subsite', 'subsite1');
+        $subsite1 = $this->objFromFixture(Subsite::class, 'subsite1');
         $this->getAndFollowAll("admin/pages/?SubsiteID={$subsite1->ID}");
         $this->assertEquals(Subsite::currentSubsiteID(), $subsite1->ID, 'Can access other subsite.');
         $this->assertRegExp('#^admin/pages.*#', $this->mainSession->lastUrl(), 'Lands on the correct section');
 
         $response = $this->getAndFollowAll('SubsiteXHRController');
-        $this->assertNotRegExp('#^Security/login.*#', $this->mainSession->lastUrl(),
-            'SubsiteXHRController is reachable');
+        $this->assertNotRegExp(
+            '#^Security/login.*#',
+            $this->mainSession->lastUrl(),
+            'SubsiteXHRController is reachable'
+        );
     }
 
     public function testAdminIsRedirectedToObjectsSubsite()
     {
         $member = $this->objFromFixture(Member::class, 'admin');
-        Session::set("loggedInAs", $member->ID);
+        $this->logInAs($member->ID);
 
-        $subsite1Home = $this->objFromFixture('SubsiteTest_Page', 'subsite1_home');
-        $subsite2 = $this->objFromFixture('Subsite', 'subsite2');
+        $subsite1Home = $this->objFromFixture(SubsiteTest_Page::class, 'subsite1_home');
+        $subsite2 = $this->objFromFixture(Subsite::class, 'subsite2');
 
         Subsite::changeSubsite($subsite2->ID);
         $this->getAndFollowAll("admin/pages/edit/show/$subsite1Home->ID");
@@ -89,16 +99,19 @@ class SubsiteAdminFunctionalTest extends FunctionalTest
     public function testEditorCanAccessAllSubsites()
     {
         $member = $this->objFromFixture(Member::class, 'editor');
-        Session::set("loggedInAs", $member->ID);
+        $this->logInAs($member->ID);
 
-        $subsite1 = $this->objFromFixture('Subsite', 'subsite1');
+        $subsite1 = $this->objFromFixture(Subsite::class, 'subsite1');
         $this->getAndFollowAll("admin/pages/?SubsiteID={$subsite1->ID}");
         $this->assertEquals(Subsite::currentSubsiteID(), $subsite1->ID, 'Can access other subsite.');
         $this->assertRegExp('#^admin/pages.*#', $this->mainSession->lastUrl(), 'Lands on the correct section');
 
         $response = $this->getAndFollowAll('SubsiteXHRController');
-        $this->assertNotRegExp('#^Security/login.*#', $this->mainSession->lastUrl(),
-            'SubsiteXHRController is reachable');
+        $this->assertNotRegExp(
+            '#^Security/login.*#',
+            $this->mainSession->lastUrl(),
+            'SubsiteXHRController is reachable'
+        );
     }
 
     /**
@@ -107,9 +120,9 @@ class SubsiteAdminFunctionalTest extends FunctionalTest
     public function testSubsiteAdmin()
     {
         $member = $this->objFromFixture(Member::class, 'subsite1member');
-        Session::set("loggedInAs", $member->ID);
+        $this->logInAs($member->ID);
 
-        $subsite1 = $this->objFromFixture('Subsite', 'subsite1');
+        $subsite1 = $this->objFromFixture(Subsite::class, 'subsite1');
 
         // Check allowed URL.
         $this->getAndFollowAll("admin/pages/?SubsiteID={$subsite1->ID}");
@@ -119,21 +132,18 @@ class SubsiteAdminFunctionalTest extends FunctionalTest
         // Check forbidden section in allowed subsite.
         $this->getAndFollowAll("admin/assets/?SubsiteID={$subsite1->ID}");
         $this->assertEquals(Subsite::currentSubsiteID(), $subsite1->ID, 'Is redirected within subsite.');
-        $this->assertNotRegExp('#^admin/assets/.*#', $this->mainSession->lastUrl(),
-            'Is redirected away from forbidden section');
-
-        // Check forbidden site, on a section that's allowed on another subsite
-        $this->getAndFollowAll("admin/pages/?SubsiteID=0");
-        $this->assertEquals(Subsite::currentSubsiteID(), $subsite1->ID, 'Is redirected to permitted subsite.');
-
-        // Check forbidden site, on a section that's not allowed on any other subsite
-        $this->getAndFollowAll("admin/assets/?SubsiteID=0");
-        $this->assertEquals(Subsite::currentSubsiteID(), $subsite1->ID, 'Is redirected to first permitted subsite.');
-        $this->assertNotRegExp('#^Security/login.*#', $this->mainSession->lastUrl(), 'Is not denied access');
+        $this->assertNotRegExp(
+            '#^admin/assets/.*#',
+            $this->mainSession->lastUrl(),
+            'Is redirected away from forbidden section'
+        );
 
         // Check the standalone XHR controller.
         $response = $this->getAndFollowAll('SubsiteXHRController');
-        $this->assertNotRegExp('#^Security/login.*#', $this->mainSession->lastUrl(),
-            'SubsiteXHRController is reachable');
+        $this->assertNotRegExp(
+            '#^Security/login.*#',
+            $this->mainSession->lastUrl(),
+            'SubsiteXHRController is reachable'
+        );
     }
 }

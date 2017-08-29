@@ -1,0 +1,54 @@
+fi:
+  ASSETADMIN:
+    SUBSITENOTICE: 'Kansiot ja tiedostot, jotka on luotu pääsivustolla, ovat käytettävissä kaikissa alisivustoissa.'
+  FileSubsites:
+    AllSitesDropdownOpt: 'Kaikki sivustot'
+    SubsiteFieldLabel: Alisivusto
+  GridFieldAddFromTemplateButton:
+    AddFromTemplate: 'Lisää uusi sivupohjasta'
+  GroupSubsites:
+    ACCESSALL: 'Kaikki alasivustot'
+    ACCESSONLY: 'Vain nämä alasivustot'
+    ACCESSRADIOTITLE: 'Anna tälle ryhmälle pääsy kohteeseen'
+    GlobalGroup: 'Globaaliryhmä'
+    MANAGE_SUBSITES: 'Hallinnoi ryhmien alisivustoja'
+    MANAGE_SUBSITES_HELP: 'Mahdollisuus rajoittaa ryhmän oikeuksia yhdelle tai useammalle alisivustolle.'
+    SECURITYTABTITLE: Alisivustot
+  LeftAndMainSubsites:
+    Saved: 'Tallennettu, ole hyvä ja päivitä liittyvät sivut.'
+  Subsite:
+    CopyMessage: 'Luotiin kopio lähteestä {title}'
+    CustomExtraMeta: 'Omat Meta-tagit'
+    CustomMetaDescription: Kuvaus
+    CustomMetaKeywords: Avainsanat
+    CustomMetaTitle: Otsikko
+    DOMAINSAVEFIRST: 'Voit lisätä domain-osoitteita vasta tallentamisen jälkeen'
+    DomainsHeadline: 'Tämän alisivuston domainit'
+    DomainsListTitle: Domainit
+    PLURALNAME: Alasivustot
+    SINGULARNAME: Alisivusto
+    SiteConfigSubtitle: 'Iskulauseesi'
+    SiteConfigTitle: 'Sivuston nimi'
+    TabTitleConfig: Asetukset
+    ValidateTitle: 'Lisää "Otsikko"'
+  SubsiteAdmin:
+    MENUTITLE: Alasivustot
+  SubsiteDomain:
+    DOMAIN: Domain
+    IS_PRIMARY: 'On päädomain'
+    PLURALNAME: 'Alisivuston domain-osoitteet'
+    SINGULARNAME: 'Alisivuston domain-osoite'
+  SubsiteReportWrapper:
+    ReportDropdown: Sivustot
+  SubsiteXHRController:
+    MENUTITLE: SubsiteXHRController
+  Subsites:
+    DomainFieldLabel: Domain
+    LanguageFieldLabel: Kieli
+    MainSiteTitle: 'Pääsivusto'
+    PrimaryDomainFieldLabel: 'Oletusdomain'
+    TitleFieldLabel: 'Alisivuston nimi'
+  SubsitesVirtualPage:
+    DESCRIPTION: 'Näyttää sisällön toisen alisivuston sivulta'
+    SINGULARNAME: 'Alisivuston Virtuaalisivu'
+    SubsiteField: Alisivu

@@ -1,0 +1,31 @@
+nl:
+  FileSubsites:
+    SubsiteFieldLabel: Subsite
+  GridFieldAddFromTemplateButton:
+    AddFromTemplate: 'Nieuwe toevegen vanaf template'
+  GroupSubsites:
+    ACCESSALL: 'Alle subsites'
+    ACCESSONLY: 'Alleen deze subsites'
+    ACCESSRADIOTITLE: 'Geef deze groep rechten aan'
+    SECURITYTABTITLE: Subsites
+  Subsite:
+    CustomMetaDescription: Omschrijving
+    CustomMetaTitle: Titel
+    PLURALNAME: Subsites
+    SINGULARNAME: Subsite
+    SiteConfigTitle: 'Jouw Site Naam'
+    TabTitleConfig: Configuratie
+  SubsiteAdmin:
+    MENUTITLE: Subsites
+  SubsiteDomain:
+    DOMAIN: Domein
+    IS_PRIMARY: 'Is Primaire domein'
+    PLURALNAME: 'Subsite Domeinen'
+    SINGULARNAME: 'Subsite Domein'
+  Subsites:
+    LanguageFieldLabel: Taal
+    PrimaryDomainFieldLabel: 'Primaire domein'
+    TitleFieldLabel: 'Subsite naam'
+  SubsitesVirtualPage:
+    SINGULARNAME: 'Subsites Virtuele pagina'
+    SubsiteField: Subsite

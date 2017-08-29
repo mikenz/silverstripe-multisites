@@ -1,4 +1,4 @@
-Subsite:
+AirNZ\SimpleSubsites\Model\Subsite:
   main:
     Title: 'Template'
   subsite1:
@@ -7,75 +7,47 @@ Subsite:
     Title: 'Subsite2 Template'
   domaintest1:
     Title: 'Test 1'
+    Domain: 'one.example.org'
   domaintest2:
     Title: 'Test 2'
+    Domain: 'two.mysite.com'
   domaintest3:
     Title: 'Test 3'
   domaintest4:
     Title: 'Test 4'
     Language: 'en_NZ'
-SubsiteDomain:
-  subsite1:
-    SubsiteID: =>Subsite.subsite1
-    Domain: 'subsite1.*'
-  subsite2:
-    SubsiteID: =>Subsite.subsite2
-    Domain: 'subsite2.*'
-  dt1a:
-    SubsiteID: =>Subsite.domaintest1
-    Domain: 'one.example.org'
-    IsPrimary: 1
-  dt1b:
-    SubsiteID: =>Subsite.domaintest1
-    Domain: 'one.*'
-  dt2a:
-    SubsiteID: =>Subsite.domaintest2
-    Domain: 'two.mysite.com'
-    IsPrimary: 1
-  dt2b:
-    SubsiteID: =>Subsite.domaintest2
-    Domain: '*.mysite.com'
-  dt3:
-    SubsiteID: =>Subsite.domaintest3
-    Domain: 'three.*'
-    IsPrimary: 1
-  dt4a:
-    SubsiteID: =>Subsite.domaintest4
     Domain: 'four.mysite.com'
-  dt4b:
-    SubsiteID: =>Subsite.domaintest4
-    Domain: www.secondary.com
-SubsiteTest_Page:
+AirNZ\SimpleSubsites\Tests\SubsiteTest_Page:
   home:
     Title: 'Home'
-    SubsiteID: =>Subsite.main
+    SubsiteID: =>AirNZ\SimpleSubsites\Model\Subsite.main
   about:
     Title: 'About'
-    SubsiteID: =>Subsite.main
+    SubsiteID: =>AirNZ\SimpleSubsites\Model\Subsite.main
   linky:
      Title: 'Linky'
-     SubsiteID: =>Subsite.main
+     SubsiteID: =>AirNZ\SimpleSubsites\Model\Subsite.main
   contact:
     Title: 'Contact Us'
-    SubsiteID: =>Subsite.main
+    SubsiteID: =>AirNZ\SimpleSubsites\Model\Subsite.main
   importantpage:
     Title: 'Important Page'
-    SubsiteID: =>Subsite.main
+    SubsiteID: =>AirNZ\SimpleSubsites\Model\Subsite.main
   subsite1_home:
     Title: 'Home (Subsite 1)'
-    SubsiteID: =>Subsite.subsite1
+    SubsiteID: =>AirNZ\SimpleSubsites\Model\Subsite.subsite1
   subsite1_contactus:
     Title: 'Contact Us (Subsite 1)'
-    SubsiteID: =>Subsite.subsite1
+    SubsiteID: =>AirNZ\SimpleSubsites\Model\Subsite.subsite1
   subsite1_staff:
     Title: 'Staff'
-    SubsiteID: =>Subsite.subsite1
+    SubsiteID: =>AirNZ\SimpleSubsites\Model\Subsite.subsite1
   subsite2_home:
     Title: 'Home (Subsite 2)'
-    SubsiteID: =>Subsite.subsite2
+    SubsiteID: =>AirNZ\SimpleSubsites\Model\Subsite.subsite2
   subsite2_contactus:
     Title: 'Contact Us (Subsite 2)'
-    SubsiteID: =>Subsite.subsite2
+    SubsiteID: =>AirNZ\SimpleSubsites\Model\Subsite.subsite2
 
 SilverStripe\Security\PermissionRoleCode:
   roleCode1:
@@ -97,17 +69,17 @@ SilverStripe\Security\Group:
     Title: subsite1_group
     Code: subsite1_group
     AccessAllSubsites: 0
-    Subsites: =>Subsite.subsite1
+    Subsites: =>AirNZ\SimpleSubsites\Model\Subsite.subsite1
   subsite2_group:
     Title: subsite2_group
     Code: subsite2_group
     AccessAllSubsites: 0
-    Subsites: =>Subsite.subsite2
+    Subsites: =>AirNZ\SimpleSubsites\Model\Subsite.subsite2
   subsite1admins:
     Title: subsite1admins
     Code: subsite1admins
     AccessAllSubsites: 0
-    Subsites: =>Subsite.subsite1
+    Subsites: =>AirNZ\SimpleSubsites\Model\Subsite.subsite1
   allsubsitesauthors:
     Title: allsubsitesauthors
     Code: allsubsitesauthors
@@ -148,7 +120,7 @@ SilverStripe\Security\Permission:
   securityaccess1:
     Code: CMS_ACCESS_SecurityAdmin
     GroupID: =>SilverStripe\Security\Group.subsite1_group
-  securityaccess2: 
+  securityaccess2:
     Code: CMS_ACCESS_SecurityAdmin
     GroupID: =>SilverStripe\Security\Group.subsite2_group
   adminsubsite1:

@@ -1,8 +1,11 @@
 <?php
 
-use SilverStripe\Dev\SapphireTest;
+namespace AirNZ\SimpleSubsites\Tests;
 
-class BaseSubsiteTest extends SapphireTest
+use SilverStripe\Dev\FunctionalTest;
+use AirNZ\SimpleSubsites\Model\Subsite;
+
+class BaseSubsiteTest extends FunctionalTest
 {
 
     public static $fixture_file = 'simplesubsites/tests/BaseSubsiteTest.yml';

@@ -1,12 +1,15 @@
 <?php
 
+namespace AirNZ\SimpleSubsites\Tests;
+
 use SilverStripe\Admin\LeftAndMain;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Dev\FunctionalTest;
 use SilverStripe\Security\Member;
 use SilverStripe\CMS\Controllers\CMSMain;
-use SilverStripe\AssetAdmin\Controller\AssetAdmin;
+use SilverStripe\SiteConfig\SiteConfigLeftAndMain;
 use SilverStripe\Core\Injector\Injector;
+use AirNZ\SimpleSubsites\Model\Subsite;
 
 class LeftAndMainSubsitesTest extends FunctionalTest
 {
@@ -44,10 +47,10 @@ class LeftAndMainSubsitesTest extends FunctionalTest
             'Lists member-accessible sites for the accessible controller.'
         );
 
-        $assetadmin = Injector::inst()->create(AssetAdmin::class);
+        $siteconfigadmin = Injector::inst()->create(SiteConfigLeftAndMain::class);
         $this->assertDOSEquals(
             [],
-            $assetadmin->sectionSites($member),
+            $siteconfigadmin->sectionSites($member),
             'Does not list any sites for forbidden controller.'
         );
     }
@@ -58,9 +61,9 @@ class LeftAndMainSubsitesTest extends FunctionalTest
         $this->loginAs($admin);
         $ids = array();
 
-        $subsite1 = $this->objFromFixture('Subsite', 'domaintest1');
-        $subsite2 = $this->objFromFixture('Subsite', 'domaintest2');
-        $subsite3 = $this->objFromFixture('Subsite', 'domaintest3');
+        $subsite1 = $this->objFromFixture(Subsite::class, 'domaintest1');
+        $subsite2 = $this->objFromFixture(Subsite::class, 'domaintest2');
+        $subsite3 = $this->objFromFixture(Subsite::class, 'domaintest3');
 
         $ids[] = $subsite1->ID;
         $ids[] = $subsite2->ID;
@@ -74,16 +77,19 @@ class LeftAndMainSubsitesTest extends FunctionalTest
             Subsite::changeSubsite($id);
             $this->assertEquals($id, Subsite::currentSubsiteID());
 
-            $left = new LeftAndMain();
+            $left = new CMSMain();
             $this->assertTrue($left->canView(), "Admin user can view subsites LeftAndMain with id = '$id'");
-            $this->assertEquals($id, Subsite::currentSubsiteID(),
-                "The current subsite has not been changed in the process of checking permissions for admin user.");
+            $this->assertEquals(
+                $id,
+                Subsite::currentSubsiteID(),
+                "The current subsite has not been changed in the process of checking permissions for admin user."
+            );
         }
     }
 
     public function testShouldChangeSubsite()
     {
-        $l = new LeftAndMain();
+        $l = new CMSMain();
         $this->assertTrue($l->shouldChangeSubsite('SilverStripe\\CMS\\Controllers\\CMSPageEditController', 0, 5));
         $this->assertFalse($l->shouldChangeSubsite('SilverStripe\\CMS\\Controllers\\CMSPageEditController', 0, 0));
         $this->assertTrue($l->shouldChangeSubsite('SilverStripe\\CMS\\Controllers\\CMSPageEditController', 1, 5));
